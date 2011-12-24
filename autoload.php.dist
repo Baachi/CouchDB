@@ -1,0 +1,12 @@
+<?php
+if (false === 'Symfony\\Component\\ClassLoader\\UniversalClassLoader') {
+    require_once __DIR__ . '/vendor/symfony/src/Symfony/Component/ClassLoader/UniversalClassLoader.php';
+}
+
+$loader = new \Symfony\Component\ClassLoader\UniversalClassLoader();
+$loader->registerNamespaces(array(
+    'CouchDB\\Tests'  => __DIR__ . '/tests',
+    'CouchDB'         => __DIR__ . '/src',
+));
+
+$loader->register();
