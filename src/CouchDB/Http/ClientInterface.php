@@ -13,6 +13,29 @@ interface ClientInterface
     const METHOD_HEAD   = 'HEAD';
 
     /**
+     * Connect to server
+     */
+    function connect();
+
+    /**
+     * Check if the client is connected to the server
+     *
+     * @return boolean
+     */
+    function isConnected();
+
+    /**
+     * Return the value from the given option.
+     * If the option does not exist, it will return $default.
+     *
+     * @param string $name
+     * @param mixed $default
+     *
+     * @return mixed
+     */
+    function getOption($name, $default);
+
+    /**
      * Request
      *
      * @param string $path
