@@ -1,0 +1,14 @@
+language: php
+php:
+    - 5.3
+    - 5.4
+
+before_script:
+    - git submodule init
+    - git submodule update --init
+
+script: phpunit
+
+notifications:
+    email:
+        - info@bachi.biz
