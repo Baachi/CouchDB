@@ -53,6 +53,16 @@ class Connection
     }
 
     /**
+     * Return the event dispatcher
+     *
+     * @return \Symfony\Component\EventDispatcher\EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        return $this->dispatcher;
+    }
+
+    /**
      * Get the configuration
      *
      * @return Configuration
@@ -132,7 +142,13 @@ class Connection
             $this->dispatcher->dispatch(Events::preDropDatabase, new EventArgs($this, $name));
         }
 
-        $json = $this->client->request("/{$name}", ClientInterface::METHOD_DELETE)->getContent();
+        $response = $this->client->request("/{$name}/", ClientInterface::METHOD_DELETE);
+
+        if (404 === $response->getStatusCode()) {
+            throw new \RuntimeException(sprintf('The database %s does not exist', $name));
+        }
+
+        $json = $response->getContent();
         $status = $this->configuration->getEncoder()->decode($json);
 
         if ($this->dispatcher->hasListeners(Events::postDropDatabase)) {
@@ -151,7 +167,29 @@ class Connection
     public function selectDatabase($name)
     {
         $this->initialize();
-        return $this->wrapDatabase($name);
+
+        $response = $this->client->request("/{$name}");
+        if (404 === $response->getStatusCode()) {
+            throw new \RuntimeException(sprintf('The database %s does not exist', $name));
+        }
+
+        $db = $this->wrapDatabase($name);
+        return $db;
+    }
+
+    /**
+     * Check if the database exist
+     *
+     * @param string $name The database name
+     * @return bool
+     */
+    public function hasDatabase($name)
+    {
+        $response = $this->client->request("/{$name}");
+        if (404 === $response->getStatusCode()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -163,8 +201,8 @@ class Connection
      */
     public function createDatabase($name)
     {
-        if (!preg_match('@[a-z0-9_$\(\)+\-]@', $name)) {
-            throw new \RuntimeException(sprintf('The database name % is invalid. The database name must match the following pattern (a-z0-9_$()+-', $name));
+        if (preg_match('@[^a-z0-9\_\$\(\)+\-]@', $name)) {
+            throw new \RuntimeException(sprintf('The database name %s is invalid. The database name must match the following pattern (a-z0-9_$()+-', $name));
         }
 
         $this->initialize();
@@ -173,11 +211,17 @@ class Connection
             $this->dispatcher->dispatch(Events::preCreateDatabase, new EventArgs($this, $name));
         }
 
-        $json  = $this->client->request("/{$name}/", ClientInterface::METHOD_PUT);
-        $value = $this->configuration->getEncoder()->decode($json);
+        $response  = $this->client->request("/{$name}/", ClientInterface::METHOD_PUT);
+
+        if (412 === $response->getStatusCode()) {
+            throw new \RuntimeException(sprintf('The database %s already exist', $name));
+        }
+
+        $json      = $response->getContent();
+        $value     = $this->configuration->getEncoder()->decode($json);
 
         if (!isset($value['ok']) || (isset($value['ok']) && $value['ok'] !== true)) {
-            throw new \RuntimeException(sprintf('Failed to create database %s', $name));
+            throw new \RuntimeException(sprintf('[%s] Failed to create database %s. (%s)', $value['error'], $name, $value['reason']));
         }
 
         $database = $this->wrapDatabase($name);
@@ -212,6 +256,17 @@ class Connection
     }
 
     /**
+     * Check if the database exist
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name)
+    {
+        return $this->hasDatabase($name);
+    }
+
+    /**
      * Wraps the database to a object
      *
      * @param string $name
@@ -219,6 +274,6 @@ class Connection
      */
     protected function wrapDatabase($name)
     {
-        return new Database($name, $this->client, $this->dispatcher);
+        return new Database($name, $this);
     }
 }
