@@ -1,6 +1,6 @@
 [submodule "vendor/symfony/src/Symfony/Component/ClassLoader"]
 	path = vendor/symfony/src/Symfony/Component/ClassLoader
 	url = https://github.com/symfony/ClassLoader
-[submodule "symfony/src/Symfony/Component/EventDispatcher"]
-	path = symfony/src/Symfony/Component/EventDispatcher
+[submodule "vendor/symfony/src/Symfony/Component/EventDispatcher"]
+	path = vendor/symfony/src/Symfony/Component/EventDispatcher
 	url = https://github.com/symfony/EventDispatcher
