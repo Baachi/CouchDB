@@ -33,7 +33,7 @@ interface ClientInterface
      *
      * @return mixed
      */
-    function getOption($name, $default);
+    function getOption($name, $default = null);
 
     /**
      * Request
@@ -41,6 +41,8 @@ interface ClientInterface
      * @param string $path
      * @param constant $method
      * @param string $data
+     *
+     * @return \CouchDB\Http\Response\ResponseInterface
      */
-    function request($path, $method, $data);
+    function request($path, $method = ClientInterface::METHOD_GET, $data = '');
 }
