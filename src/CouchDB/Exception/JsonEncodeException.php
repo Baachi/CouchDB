@@ -4,7 +4,7 @@ namespace CouchDB\Exception;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class JsonDecodeException extends \Exception
+class JsonEncodeException extends \Exception
 {
     protected static $errors = array(
         JSON_ERROR_NONE           => 'unknown error',
@@ -15,7 +15,7 @@ class JsonDecodeException extends \Exception
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters'
     );
 
-    public function __construct($data, $code, $previous)
+    public function __construct($data, $code = 0, $previous = null)
     {
         $message = sprintf('Json encode error [%s]: %s', static::$errors[json_last_error()], var_export($data, true));
         parent::__construct($message, $code, $previous);

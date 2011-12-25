@@ -34,7 +34,7 @@ class NativeEncoder implements EncoderInterface
      */
     public function decode($json)
     {
-        $value = json_decode($json);
+        $value = json_decode($json, true);
         if (!$value) {
             throw new JsonDecodeException($json);
         }

@@ -15,7 +15,7 @@ class JsonDecodeException extends \Exception
         JSON_ERROR_UTF8           => 'Malformed UTF-8 characters'
     );
 
-    public function __construct($json, $code, $previous)
+    public function __construct($json, $code = 0, $previous = null)
     {
         $message = sprintf('Json decode error [%s]: %s', static::$errors[json_last_error()], $json);
         parent::__construct($message, $code, $previous);
