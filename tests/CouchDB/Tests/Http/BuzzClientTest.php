@@ -21,7 +21,7 @@ class BuzzClientTest extends TestCase
 
     public function testIsConnected()
     {
-        $this->assertTrue($this->client->isConnected());
+        $this->assertFalse($this->client->isConnected());
         $this->client->connect();
         $this->assertTrue($this->client->isConnected());
     }
@@ -36,22 +36,22 @@ class BuzzClientTest extends TestCase
 
     public function testPostRequest()
     {
-        $response = $this->client->request('/', BuzzClient::METHOD_POST, array(), '{"test":"test"}');
+        $response = $this->client->request('/', BuzzClient::METHOD_POST, '{"test":"test"}', array());
         $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
     }
     public function testDeleteRequest()
     {
-        $response = $this->client->request('/', BuzzClient::METHOD_DELETE, array(), '{"test":"test"}');
+        $response = $this->client->request('/', BuzzClient::METHOD_DELETE, '{"test":"test"}', array());
         $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
     }
     public function testPutRequest()
     {
-        $response = $this->client->request('/', BuzzClient::METHOD_PUT, array(), '{"test":"test"}');
+        $response = $this->client->request('/', BuzzClient::METHOD_PUT, '{"test":"test"}', array());
         $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
     }
     public function testCopyRequest()
     {
-        $response = $this->client->request('/', BuzzClient::METHOD_COPY, array(), '{"test":"test"}');
+        $response = $this->client->request('/', BuzzClient::METHOD_COPY, '{"test":"test"}', array());
         $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
     }
 }

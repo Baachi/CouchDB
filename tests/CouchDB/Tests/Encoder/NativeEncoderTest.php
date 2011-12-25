@@ -4,6 +4,7 @@ namespace CouchDB\Tests\Encoder;
 use CouchDB\Tests\TestCase;
 use CouchDB\Encoder\NativeEncoder;
 use CouchDB\Exception\JsonDecodeException;
+use CouchDB\Exception\JsonEncodeException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -35,10 +36,16 @@ class NativeEncoderTest extends TestCase
     {
         try {
             $this->encoder->decode('[invalid}');
-            $this->fail('Syntax error');
+            $this->fail();
         } catch (JsonDecodeException $e) {
             $this->assertEquals('Json decode error [Syntax error]: [invalid}', $e->getMessage());
         }
+    }
+
+    public function testInvalidEncode()
+    {
+        $this->setExpectedException('CouchDB\\Exception\\JsonEncodeException');
+        $this->encoder->encode("\xB1\x31");
     }
 
     static public function getEncodeData()

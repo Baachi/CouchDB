@@ -11,12 +11,12 @@ class ResponseTest extends TestCase
 {
     protected function setUp()
     {
-        $this->response = new Response(200, '{"status:"404"}', array('Content-Type' => 'application/json'));
+        $this->response = new Response(200, '{"status":"404"}', array('Content-Type' => 'application/json'));
     }
 
     public function testGetContent()
     {
-        $this->assertEquals('{"status:"404"}', $this->response->getContent());
+        $this->assertEquals('{"status":"404"}', $this->response->getContent());
     }
 
     public function testGetStatusCode()
@@ -33,6 +33,11 @@ class ResponseTest extends TestCase
     public function testGetHeaders()
     {
         $this->assertEquals(array('Content-Type' => 'application/json'), $this->response->getHeaders());
+    }
+
+    public function testToString()
+    {
+        $this->assertEquals('{"status":"404"}', (string) $this->response);
     }
 
     public function testIsSuccessful()
