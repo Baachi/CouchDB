@@ -42,8 +42,9 @@ interface ClientInterface
      * @param string $path
      * @param constant $method
      * @param string $data
+     * @param array $headers
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */
-    function request($path, $method = ClientInterface::METHOD_GET, $data = '');
+    function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array());
 }

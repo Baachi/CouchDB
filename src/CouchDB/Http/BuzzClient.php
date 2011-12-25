@@ -12,6 +12,8 @@ class BuzzClient implements ClientInterface
 
     protected $browser;
 
+    protected $connected;
+
     public function __construct(Browser $browser, $host = '127.0.0.1', $port = 5984)
     {
         $this->options = array(
@@ -20,6 +22,7 @@ class BuzzClient implements ClientInterface
         );
 
         $this->browser = $browser;
+        $this->connected = false;
     }
 
     /**
@@ -27,7 +30,7 @@ class BuzzClient implements ClientInterface
      */
     public function connect()
     {
-        return true;
+        $this->connected = true;
     }
 
     /**
@@ -37,7 +40,7 @@ class BuzzClient implements ClientInterface
      */
     public function isConnected()
     {
-        return true;
+        return $this->connected;
     }
 
     /**
@@ -63,10 +66,10 @@ class BuzzClient implements ClientInterface
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */
-    public function request($path, $method = ClientInterface::METHOD_GET, $data = '')
+    public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
-        $url = sprintf('http://%s:%d/%s', $this->getOption('host'), $this->getOption('port'), ltrim('/', $path));
-        $response = $this->browser->call($url, $method, array(), $data);
+        $url = sprintf('http://%s:%d/%s', $this->getOption('host'), $this->getOption('port'), ltrim($path, '/'));
+        $response = $this->browser->call($url, $method, $headers, $data);
         return new Response\Response($response->getStatusCode(), $response->getContent(), $response->getHeaders());
     }
 
