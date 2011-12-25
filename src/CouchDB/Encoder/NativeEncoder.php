@@ -18,8 +18,8 @@ class NativeEncoder implements EncoderInterface
      */
     public function encode($value)
     {
-        $json = json_encode($value);
-        if (!$json) {
+        $json = @json_encode($value);
+        if ("null" === $json && $value !== null) {
             throw new JsonEncodeException($value);
         }
         return $json;
