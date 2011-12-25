@@ -7,3 +7,6 @@
 [submodule "vendor/buzz"]
 	path = vendor/buzz
 	url = https://github.com/kriswallsmith/Buzz
+[submodule "vendor/guzzle"]
+	path = vendor/guzzle
+	url = https://github.com/guzzle/guzzle
