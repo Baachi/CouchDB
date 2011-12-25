@@ -22,7 +22,7 @@ class Connection
 
     public function initialize()
     {
-        if (!$this->client->isConnected()) {
+        if ($this->client->isConnected()) {
             return;
         }
 
@@ -85,5 +85,10 @@ class Connection
     public function __unset($name)
     {
         return $this->dropDatabase($name);
+    }
+
+    protected function wrapDatabase($name, $data)
+    {
+
     }
 }
