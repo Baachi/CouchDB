@@ -3,6 +3,7 @@ namespace CouchDB;
 
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
+use CouchDB\Query\QueryBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -11,73 +12,41 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class Database
 {
     /**
-     * @var ClientInterface
+     * @var Connection
      */
-    protected $client;
-
-    /**
-     * @var EventDispatcher
-     */
-    protected $dispatcher;
+    protected $conn;
 
     /**
      * @var string
      */
     protected $name;
 
-    public function __construct($name, ClientInterface $client, EventDispatcher $dispatcher)
+    public function __construct($name, Connection $conn)
     {
-        $this->client = $client;
-        $this->dispatcher = $dispatcher;
+        $this->conn = $conn;
         $this->name = $name;
-    }
-
-    public function initialize()
-    {
-        if ($this->client->isConnected()) {
-            return;
-        }
-
-        if ($this->dispatcher->hasListeners(Events::preConnect)) {
-            $this->dispatcher->dispatch(Events::preConnect, new EventArgs($this));
-        }
-
-        $this->client->connect();
-
-        if ($this->dispatcher->hasListeners(Events::postConnect)) {
-            $this->dispatcher->dispatch(Events::postConnect, new EventArgs($this));
-        }
     }
 
     public function find($id)
     {
-
+        $json = $this->conn->getClient()->request("/{$this->name}/{$id}")->getContent();
+        $doc  = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        return $doc;
     }
 
-    public function findAllDocs()
+    public function findAll()
     {
+        $json = $this->conn->getClient()->request('/_all_docs')->getContent();
+        $docs = $this->conn->getConfiguration()->getEncoder()->decode($json);
 
+        return $docs;
     }
 
     public function info()
     {
-
-    }
-
-    public function createQueryBuilder()
-    {
-
-    }
-
-    public function getClient()
-    {
-        return $this->client;
-    }
-
-    public function setClient(ClientInterface $client)
-    {
-        $this->client = $client;
-        $this->initialize();
+        $json = $this->conn->getClient()->request("/{$this->name}/")->getContent();
+        $info = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        return $info;
     }
 
     public function getName()
