@@ -10,4 +10,7 @@ final class Events
 
     const preDropDatabase = 'preDropDatabase';
     const postDropDatabase = 'postDropDatabase';
+
+    const preCreateDatabase = 'preCreateDatabase';
+    const postCreateDatabase = 'postCreateDatabase';
 }
