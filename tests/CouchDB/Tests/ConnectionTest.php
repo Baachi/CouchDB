@@ -21,6 +21,13 @@ class ConnectionTest extends TestCase
         }
     }
 
+    public function testIsConnected()
+    {
+        $this->assertFalse($this->conn->isConnected());
+        $this->conn->initialize();
+        $this->assertTrue($this->conn->isConnected());
+    }
+
     public function testListDatabases()
     {
         $databases = $this->conn->listDatabases();
