@@ -26,17 +26,6 @@ interface ClientInterface
     function isConnected();
 
     /**
-     * Return the value from the given option.
-     * If the option does not exist, it will return $default.
-     *
-     * @param string $name
-     * @param mixed $default
-     *
-     * @return mixed
-     */
-    function getOption($name, $default = null);
-
-    /**
      * Request
      *
      * @param string $path
