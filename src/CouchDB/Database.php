@@ -26,6 +26,17 @@ class Database
         $this->name = $name;
     }
 
+    public function getConnection()
+    {
+        return $this->conn;
+    }
+
+    public function setConnection(Connection $conn)
+    {
+        $this->conn = $conn;
+        $this->conn->initialize();
+    }
+
     public function find($id)
     {
         $this->conn->initialize();
