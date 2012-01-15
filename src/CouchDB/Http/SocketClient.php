@@ -55,7 +55,7 @@ class SocketClient extends AbstractClient
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
-        $request = $this->buildRequest($path, strtoupper($method), $data, $headers);
+        $request = $this->buildRequest($path, strtoupper($method), $headers, $data);
 
         if (!$this->isConnected()) {
             throw new \LogicException('Not connected to the server');
@@ -73,14 +73,14 @@ class SocketClient extends AbstractClient
             $line = trim($line);
             if (preg_match('@^HTTP/[\d\.]+\s*(\d+)\s*.*$@i', $line, $matches)) {
                 $status = $matches[1];
-            } else if (preg_match('@^(.*):(.*)$@', $line, $matches)) {
+            } else if (preg_match('@^([^\{\[]+):(.*)$@', $line, $matches)) {
                 $headers[$matches[1]] = $matches[2];
             } else {
                 $content .= $line;
             }
         }
 
-        return new Response\Response($status, $content, $line);
+        return new Response\Response($status, $content, $headers);
     }
 
     /**
@@ -94,9 +94,13 @@ class SocketClient extends AbstractClient
      */
     private function buildRequest($path, $method, array $headers, $data)
     {
-        $string = "{$method} {$path} HTTP/1.1\n";
+        $string = "{$method} {$path} HTTP/1.1\r\n";
 
-        if ('' !== $data) {
+        $headers = array_merge(array(
+            'Host' => $this->getOption('host')
+        ), $headers);
+
+        if ('' !== $data || null !== $data) {
             $headers['Content-Length'] = strlen($data);
         }
 
@@ -104,7 +108,7 @@ class SocketClient extends AbstractClient
             $string .= "{$var}: {$value}\r\n";
         }
 
-        if (!empty($data)) {
+        if ('' !== $data || null !== $data) {
             $string .= "\r\n{$data}";
         }
 
