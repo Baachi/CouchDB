@@ -142,6 +142,8 @@ class Connection
             $this->dispatcher->dispatch(Events::preDropDatabase, new EventArgs($this, $name));
         }
 
+        $name = urlencode($name);
+
         $response = $this->client->request("/{$name}/", ClientInterface::METHOD_DELETE);
 
         if (404 === $response->getStatusCode()) {
@@ -168,6 +170,8 @@ class Connection
     {
         $this->initialize();
 
+        $name = urlencode($name);
+
         $response = $this->client->request("/{$name}");
         if (404 === $response->getStatusCode()) {
             throw new \RuntimeException(sprintf('The database %s does not exist', $name));
@@ -185,6 +189,8 @@ class Connection
      */
     public function hasDatabase($name)
     {
+        $this->initialize();
+        $name = urlencode($name);
         $response = $this->client->request("/{$name}");
         if (404 === $response->getStatusCode()) {
             return false;
@@ -206,6 +212,8 @@ class Connection
         }
 
         $this->initialize();
+
+        $name = urlencode($name);
 
         if ($this->dispatcher->hasListeners(Events::preCreateDatabase)) {
             $this->dispatcher->dispatch(Events::preCreateDatabase, new EventArgs($this, $name));
