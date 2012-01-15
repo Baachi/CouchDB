@@ -101,8 +101,13 @@ class SocketClient extends AbstractClient
         }
 
         foreach ($headers as $var => $value) {
-            $string .= "{$var}: {$value}\n";
+            $string .= "{$var}: {$value}\r\n";
         }
+
+        if (!empty($data)) {
+            $string .= "\r\n{$data}";
+        }
+
         return $string;
     }
 }
