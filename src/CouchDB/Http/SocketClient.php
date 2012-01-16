@@ -8,7 +8,7 @@ class SocketClient extends AbstractClient
 {
     protected $resource;
 
-    public function __construct($host = '127.0.0.1', $port = 5984, $timeout = 100)
+    public function __construct($host = '127.0.0.1', $port = 5984, $timeout = 1000)
     {
         if (!function_exists('fsockopen')) {
             throw new \RuntimeException('Function "fsockopen" must be available');
@@ -69,8 +69,12 @@ class SocketClient extends AbstractClient
         $status    = '';
         $content   = '';
 
+        $rawContent = array();
         while (false !== $line = fgets($this->resource)) {
-            $line = trim($line);
+            $rawContent[] = trim($line);
+        }
+
+        foreach ($rawContent as $line) {
             if (preg_match('@^HTTP/[\d\.]+\s*(\d+)\s*.*$@i', $line, $matches)) {
                 $status = $matches[1];
             } else if (preg_match('@^([^\{\[]+):(.*)$@', $line, $matches)) {
@@ -94,22 +98,22 @@ class SocketClient extends AbstractClient
      */
     private function buildRequest($path, $method, array $headers, $data)
     {
-        $string = "{$method} {$path} HTTP/1.1\r\n";
+        $string = "{$method} {$path} HTTP/1.1\n";
 
         $headers = array_merge(array(
             'Host' => $this->getOption('host')
         ), $headers);
 
-        if ('' !== $data || null !== $data) {
+        if ('' !== $data && null !== $data) {
             $headers['Content-Length'] = strlen($data);
         }
 
         foreach ($headers as $var => $value) {
-            $string .= "{$var}: {$value}\r\n";
+            $string .= "{$var}: {$value}\n";
         }
 
-        if ('' !== $data || null !== $data) {
-            $string .= "\r\n{$data}";
+        if ('' !== $data && null !== $data) {
+            $string .= "\n{$data}";
         }
 
         return $string;

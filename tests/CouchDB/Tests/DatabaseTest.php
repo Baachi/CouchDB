@@ -28,24 +28,15 @@ class DatabaseTest extends TestCase
         $this->assertEquals(array('total_rows' => 0, 'offset' => 0, 'rows' => array()), $docs);
     }
 
-    /**
-     * @dataProvider getTestInsertData
-     */
-    public function _testInsert($doc)
+    public function testInsert()
     {
+        $doc = array(
+            'book' => 'CouchDB Manual',
+            'author' => 'John Doe',
+        );
+
         list($id) = $this->database->insert($doc);
         $this->assertInternalType('string', $id);
         $this->assertEquals($doc, $this->database->find($id));
-    }
-
-    static public function getTestInsertData()
-    {
-        return array(
-            array('foobar'),
-            array(1),
-            array(1.1),
-            array('John', 'Jack'),
-            array('author' => 'John', 'title' => 'CouchDB for PHP')
-        );
     }
 }

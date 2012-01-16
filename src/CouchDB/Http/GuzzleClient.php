@@ -14,7 +14,7 @@ class GuzzleClient implements ClientInterface
 
     public function __construct($host = '127.0.0.1', $port = 5984)
     {
-        $this->client = new Client(sprintf('https://%s:%d', $host, $port));
+        $this->client = new Client(sprintf('http://%s:%d', $host, $port));
     }
 
     /**

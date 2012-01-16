@@ -23,6 +23,8 @@ class SocketClientTest extends TestCase
 
     public function testRequest()
     {
-
+        $this->client->connect();
+        $response = $this->client->request('/test', 'PUT');
+        $this->assertTrue($response->isSuccessful());
     }
 }

@@ -228,7 +228,7 @@ class Connection
         $json      = $response->getContent();
         $value     = $this->configuration->getEncoder()->decode($json);
 
-        if (!isset($value['ok']) || (isset($value['ok']) && $value['ok'] !== true)) {
+        if (isset($value['error'])) {
             throw new \RuntimeException(sprintf('[%s] Failed to create database %s. (%s)', $value['error'], $name, $value['reason']));
         }
 

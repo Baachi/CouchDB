@@ -54,14 +54,25 @@ class Database
         return $docs;
     }
 
-    public function insert($doc)
+    public function insert(array $doc)
     {
         $this->conn->initialize();
         $json = $this->conn->getConfiguration()->getEncoder()->encode($doc);
-        $response = $this->conn->getClient()->request("/{$this->name}", ClientInterface::METHOD_POST, $json, array('content-type' => 'application/json'));
+
+        $response = $this->conn->getClient()->request(
+            "/{$this->name}",
+            ClientInterface::METHOD_PUT,
+            $json,
+            array('content-type' => 'application/json')
+        );
 
         if (201 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf('Unable to save %s: %s', var_export($doc, true), $response));
+            throw new \RuntimeException(sprintf(
+                'Unable to save %s: Response (%d): %s',
+                var_export($doc, true),
+                $response->getStatusCode(),
+                $response
+            ));
         }
 
         list($status, $id, $rev) = $this->conn->getConfiguration()->getEncoder()->decode($response->getContent());
