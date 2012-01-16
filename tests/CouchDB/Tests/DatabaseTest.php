@@ -16,19 +16,19 @@ class DatabaseTest extends TestCase
         $this->createTestConnection()->dropDatabase($this->database->getName());
     }
 
-    public function testGetName()
+    public function _testGetName()
     {
         $this->assertEquals('test', $this->database->getName());
     }
 
-    public function testFindAll()
+    public function _testFindAll()
     {
         $docs = $this->database->findAll();
         $this->assertInternalType('array', $docs);
         $this->assertEquals(array('total_rows' => 0, 'offset' => 0, 'rows' => array()), $docs);
     }
 
-    public function testInsert()
+    public function _testInsert()
     {
         $doc = array(
             'book' => 'CouchDB Manual',
