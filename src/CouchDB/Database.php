@@ -40,31 +40,83 @@ class Database
     public function find($id)
     {
         $this->conn->initialize();
-        $json = $this->conn->getClient()->request("/{$this->name}/{$id}")->getContent();
-        $doc  = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        $response = $this->conn->getClient()->request("/{$this->name}/{$id}");
+        $json     = $response->getContent();
+        $doc      = $this->conn->getConfiguration()->getEncoder()->decode($json);
+
+        if (404 === $response->getStatusCode()) {
+            throw new \RuntimeException('Document does not exist');
+        }
+
         return $doc;
     }
 
-    public function findAll()
+    public function findAll($limit = null, $startKey = null)
     {
         $this->conn->initialize();
-        $json = $this->conn->getClient()->request("/{$this->name}/_all_docs")->getContent();
+
+        $path = "/{$this->name}/_all_docs?include_docs=true";
+
+        if (null !== $limit) {
+            $path .= '&limit=' . (integer) $limit;
+        }
+        if (null !== $startKey) {
+            $path .= '&startkey=' . (string) $startKey;
+        }
+
+        $json = $this->conn->getClient()->request($path)->getContent();
         $docs = $this->conn->getConfiguration()->getEncoder()->decode($json);
 
         return $docs;
     }
 
-    public function insert(array $doc)
+    public function findDocuments(array $ids, $limit = null, $offset = null)
+    {
+        $this->conn->initialize();
+        $encoder = $this->conn->getConfiguration()->getEncoder();
+
+        $path = "/{$this->name}/_all_docs?include_docs=true";
+
+        if (null !== $limit) {
+            $path .= '&limit=' . (integer) $limit;
+        }
+        if (null !== $offset) {
+            $path .= '&skip=' . (integer) $offset;
+        }
+
+        $json = $encoder->encode(array('keys' => $ids));
+
+        $response = $this->conn->getClient()->request(
+            $path,
+            ClientInterface::METHOD_POST,
+            $json,
+            array('content-type' => 'application/json')
+        );
+
+        $value = $encoder->decode($response->getContent());
+        return $value;
+    }
+
+    public function insert(array & $doc)
     {
         $this->conn->initialize();
         $json = $this->conn->getConfiguration()->getEncoder()->encode($doc);
 
-        $response = $this->conn->getClient()->request(
-            "/{$this->name}",
-            ClientInterface::METHOD_PUT,
-            $json,
-            array('content-type' => 'application/json')
-        );
+        if (isset($doc['_id'])) {
+            $response = $this->conn->getClient()->request(
+                "{$this->name}/{$doc['_id']}",
+                ClientInterface::METHOD_PUT,
+                $json,
+                array('Content-Type' => 'application/json')
+            );
+        } else {
+            $response = $this->conn->getClient()->request(
+                "{$this->name}/",
+                ClientInterface::METHOD_POST,
+                $json,
+                array('Content-Type' => 'application/json')
+            );
+        }
 
         if (201 !== $response->getStatusCode()) {
             throw new \RuntimeException(sprintf(
@@ -75,19 +127,47 @@ class Database
             ));
         }
 
-        list($status, $id, $rev) = $this->conn->getConfiguration()->getEncoder()->decode($response->getContent());
-        return array('id' => $id, 'rev' => $rev);
+        $value = $this->conn->getConfiguration()->getEncoder()->decode($response->getContent());
+        $status = $value['ok'];
+        $id     = $value['id'];
+        $rev    = $value['rev'];
+
+        $doc['_id'] = $id;
+        $doc['_rev'] = $rev;
     }
 
-    public function update($id, $doc)
-    {
-
-    }
-
-    public function delete($id)
+    public function update($id, & $doc)
     {
         $this->conn->initialize();
-        $response = $this->conn->getClient()->request("/{$this->name}/{$doc}", ClientInterface::METHOD_DELETE);
+
+        $encoder = $this->getConnection()->getConfiguration()->getEncoder();
+        $json = $encoder->encode($doc);
+
+        $response = $this->getConnection()->getClient()->request(
+            "{$this->name}/{$id}",
+            ClientInterface::METHOD_PUT,
+            $json,
+            array('Content-Type' => 'application/json')
+        );
+
+        if (201 !== $response->getStatusCode()) {
+            throw new \RuntimeException('Unable to save document');
+        }
+
+        $value = $encoder->decode($response->getContent());
+        $id = $value['id'];
+        $rev = $value['rev'];
+
+        $doc['_id'] = $id;
+        $doc['_rev'] = $id;
+
+        return true;
+    }
+
+    public function delete($id, $rev)
+    {
+        $this->conn->initialize();
+        $response = $this->conn->getClient()->request("/{$this->name}/{$id}?rev={$rev}", ClientInterface::METHOD_DELETE);
 
         if (200 !== $response->getStatusCode()) {
             throw new \RuntimeException(sprintf('Unable to delete %s', $id));
@@ -96,7 +176,7 @@ class Database
         return true;
     }
 
-    public function info()
+    public function getInfo()
     {
         $this->conn->initialize();
         $json = $this->conn->getClient()->request("/{$this->name}/")->getContent();
