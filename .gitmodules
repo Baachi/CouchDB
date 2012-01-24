@@ -4,9 +4,3 @@
 [submodule "vendor/symfony/src/Symfony/Component/EventDispatcher"]
 	path = vendor/symfony/src/Symfony/Component/EventDispatcher
 	url = https://github.com/symfony/EventDispatcher
-[submodule "vendor/buzz"]
-	path = vendor/buzz
-	url = https://github.com/kriswallsmith/Buzz
-[submodule "vendor/guzzle"]
-	path = vendor/guzzle
-	url = https://github.com/guzzle/guzzle
