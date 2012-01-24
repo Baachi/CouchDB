@@ -90,7 +90,7 @@ class Database
             $path,
             ClientInterface::METHOD_POST,
             $json,
-            array('content-type' => 'application/json')
+            array('Content-Type' => 'application/json')
         );
 
         $value = $encoder->decode($response->getContent());
