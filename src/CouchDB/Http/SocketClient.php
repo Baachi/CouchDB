@@ -75,13 +75,20 @@ class SocketClient extends AbstractClient
         }
 
         foreach ($rawContent as $line) {
-            if (preg_match('@^HTTP/[\d\.]+\s*(\d+)\s*.*$@i', $line, $matches)) {
-                $status = $matches[1];
-            } else if (preg_match('@^([^\{\[]+):(.*)$@', $line, $matches)) {
-                $headers[$matches[1]] = $matches[2];
+            if (preg_match('@^HTTP/([\d\.]+)\s*(\d+)\s*.*$@i', $line, $matches)) {
+                $status = $matches[2];
+                $headers['version'] = $matches[1];
             } else {
-                $content .= $line;
+                list($key, $value) = explode(':'. $content, 2);
+                $headers[strtolower($key)] = trim($value);
             }
+        }
+
+        $bytesToRead = isset($headers['content-length']) ? $headers['content-length'] : 0;
+
+        while ( $bytesToRead > 0 ) {
+            $content .= $line = fgets($this->resource, $bytesToRead + 1);
+            $bytesToRead -= strlen($line);
         }
 
         return new Response\Response($status, $content, $headers);
