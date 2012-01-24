@@ -55,7 +55,7 @@ class StreamClient extends AbstractClient
     {
         $header = '';
         foreach ($headers as $key => $value) {
-            $headers .= sprintf("%s: %s\n", $key, $value);
+            $header .= sprintf("%s: %s\n", $key, $value);
         }
 
         $resource = @fopen(
