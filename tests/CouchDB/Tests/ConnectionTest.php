@@ -11,13 +11,13 @@ class ConnectionTest extends TestCase
 {
     protected function setUp()
     {
-        $this->conn = new Connection(new BuzzClient(new \Buzz\Browser(new \Buzz\Client\Curl())));
+        $this->conn = $this->createTestConnection();
     }
 
     protected function tearDown()
     {
-        if ($this->conn->hasDatabase('test')) {
-            $this->conn->dropDatabase('test');
+        if (isset($this->conn->test)) {
+            unset($this->conn->test);
         }
     }
 
