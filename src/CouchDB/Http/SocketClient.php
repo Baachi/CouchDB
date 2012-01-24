@@ -21,6 +21,13 @@ class SocketClient extends AbstractClient
         ));
     }
 
+    public function getDefaultOptions()
+    {
+        return array(
+            'keep-alive' => true,
+        );
+    }
+
     /**
      * Connect to server
      */
@@ -70,7 +77,7 @@ class SocketClient extends AbstractClient
         $content   = '';
 
         $rawContent = array();
-        while (false !== $line = fgets($this->resource)) {
+        while (false !== $line = fgets($this->resource, 4096)) {
             $rawContent[] = trim($line);
         }
 
@@ -113,6 +120,12 @@ class SocketClient extends AbstractClient
 
         if ('' !== $data && null !== $data) {
             $headers['Content-Length'] = strlen($data);
+        }
+
+        if (true === $this->getOption('keep-alive')) {
+            $headers['connection'] = 'keep-alive';
+        } else {
+            $headers['connection'] = 'close';
         }
 
         foreach ($headers as $var => $value) {

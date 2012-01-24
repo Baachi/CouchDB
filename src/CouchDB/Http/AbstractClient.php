@@ -10,7 +10,7 @@ abstract class AbstractClient implements ClientInterface
 
     public function __construct(array $options)
     {
-        $this->options = $options;
+        $this->options = array_merge($this->getDefaultOptions(), $options);
     }
 
     public function getOption($key, $default = null)
@@ -21,5 +21,10 @@ abstract class AbstractClient implements ClientInterface
     public function setOption($key, $value)
     {
         $this->options[$key] = $value;
+    }
+
+    public function getDefaultOptions()
+    {
+        return array();
     }
 }
