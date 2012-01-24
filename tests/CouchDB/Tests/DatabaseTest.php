@@ -131,4 +131,10 @@ class DatabaseTest extends TestCase
         $this->assertEquals(100, $docs['total_rows']);
         $this->assertCount(3, $docs['rows']);
     }
+
+    public function testCreateBatchUpdater()
+    {
+        $batchUpdater = $this->db->createBatchUpdater();
+        $this->assertInstanceOf('CouchDB\\Util\\BatchUpdater', $batchUpdater);
+    }
 }

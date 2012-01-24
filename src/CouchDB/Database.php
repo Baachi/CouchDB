@@ -176,6 +176,15 @@ class Database
         return true;
     }
 
+    /**
+     * Creates a batch updater
+     * @return Util\BatchUpdater
+     */
+    public function createBatchUpdater()
+    {
+        return new Util\BatchUpdater($this->conn->getClient(), $this);
+    }
+
     public function getInfo()
     {
         $this->conn->initialize();
