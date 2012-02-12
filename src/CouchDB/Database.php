@@ -26,17 +26,34 @@ class Database
         $this->name = $name;
     }
 
+    /**
+     * Gets the current connection
+     *
+     * @return Connection
+     */
     public function getConnection()
     {
         return $this->conn;
     }
 
+    /**
+     * Sets a new connection
+     *
+     * @param Connection $conn
+     */
     public function setConnection(Connection $conn)
     {
         $this->conn = $conn;
         $this->conn->initialize();
     }
 
+    /**
+     * Find a document by a id
+     *
+     * @param $id
+     * @return mixed
+     * @throws \RuntimeException
+     */
     public function find($id)
     {
         $this->conn->initialize();
@@ -51,6 +68,13 @@ class Database
         return $doc;
     }
 
+    /**
+     * Find all documents from the database
+     *
+     * @param null $limit
+     * @param null $startKey
+     * @return mixed
+     */
     public function findAll($limit = null, $startKey = null)
     {
         $this->conn->initialize();
@@ -70,6 +94,15 @@ class Database
         return $docs;
     }
 
+    /**
+     * Find a documents by a id
+     *
+     * @param array $ids
+     * @param null|integer $limit
+     * @param null|integer $offset
+     *
+     * @return array|null
+     */
     public function findDocuments(array $ids, $limit = null, $offset = null)
     {
         $this->conn->initialize();
@@ -97,6 +130,12 @@ class Database
         return $value;
     }
 
+    /**
+     * Insert a new document.
+     *
+     * @param array $doc
+     * @throws \RuntimeException
+     */
     public function insert(array & $doc)
     {
         $this->conn->initialize();
@@ -136,7 +175,15 @@ class Database
         $doc['_rev'] = $rev;
     }
 
-    public function update($id, & $doc)
+    /**
+     * Updates a document
+     *
+     * @param string $id  The id from the document
+     * @param array $doc  A reference from the document
+     * @return bool
+     * @throws \RuntimeException
+     */
+    public function update($id, array & $doc)
     {
         $this->conn->initialize();
 
@@ -164,6 +211,15 @@ class Database
         return true;
     }
 
+    /**
+     * Deletes a document
+     *
+     * @param string $id
+     * @param string $rev
+     *
+     * @return bool
+     * @throws \RuntimeException
+     */
     public function delete($id, $rev)
     {
         $this->conn->initialize();
@@ -178,6 +234,7 @@ class Database
 
     /**
      * Creates a batch updater
+     *
      * @return Util\BatchUpdater
      */
     public function createBatchUpdater()
@@ -185,6 +242,11 @@ class Database
         return new Util\BatchUpdater($this->conn->getClient(), $this);
     }
 
+    /**
+     * Return the database informations
+     *
+     * @return array
+     */
     public function getInfo()
     {
         $this->conn->initialize();
@@ -193,6 +255,11 @@ class Database
         return $info;
     }
 
+    /**
+     * Return the database name
+     *
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
