@@ -13,7 +13,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 {
     public function createTestConnection()
     {
-        $client = new LoggingClient(new StackLogger(), new StreamClient());
+        $client = new LoggingClient(new StreamClient());
         $conn   = new Connection($client);
         return $conn;
     }
