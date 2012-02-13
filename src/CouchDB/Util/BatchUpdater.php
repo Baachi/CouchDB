@@ -31,15 +31,23 @@ class BatchUpdater
 
     public function delete($id, $rev)
     {
-        $this->data['docs'] = array('_id' => $id, '_rev' => $rev, '_deleted' => true);
+        $this->data['docs'][] = array('_id' => $id, '_rev' => $rev, '_deleted' => true);
         return $this;
     }
 
     public function execute()
     {
-        $encoder =$this->database->getConnection()->getConfiguration()->getEncoder();
-        $json = $encoder->encode($this->data);
-        $response = $this->client->request("/{$this->databse->getName()}/_bulk_docs", ClientInterface::METHOD_POST, $json);
+        $encoder = $this->database->getConnection()->getConfiguration()->getEncoder();
+        $json    = $encoder->encode($this->data);
+
+        $response = $this->client->request(
+            "/{$this->database->getName()}/_bulk_docs",
+            ClientInterface::METHOD_POST,
+            $json,
+            array(
+                'Content-Type' => 'application/json'
+            )
+        );
 
         return $encoder->decode($response->getContent());
     }
