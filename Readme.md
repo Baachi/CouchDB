@@ -11,11 +11,13 @@ Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrin
 __GitHub:__
 
 You can clone the Repository:
+
 ```
 git clone --recursive https://github.com/Baachi/CouchDB.git
 ```
 
 or if you already use a git
+
 ```
 git submodule add https://github.com/Baachi/CouchDB.git
 ```
@@ -23,6 +25,7 @@ git submodule add https://github.com/Baachi/CouchDB.git
 __Composer:__
 
 You can install CouchDB Client over composer. Add the following line into your ```composer.json``` file.
+
 ```
 "requires": {
     "bachi/couchdb": "*"
@@ -30,7 +33,9 @@ You can install CouchDB Client over composer. Add the following line into your `
 ```
 
 And now, if you are not use a autoloader, include the ``` autoload.php.dist``` in your project.
-```php
+
+``` php
+<?php
 require_once '/path/to/couchdb/autoload.php.dist';
 ```
 
