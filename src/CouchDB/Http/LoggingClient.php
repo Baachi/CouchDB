@@ -1,17 +1,12 @@
 <?php
 namespace CouchDB\Http;
 
-use CouchDB\Logging\LoggingInterface;
-
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class LoggingClient implements ClientInterface
 {
-    /**
-     * @var LoggingInterface
-     */
-    protected $logger;
+    protected $stack;
 
     /**
      * @var ClientInterface
@@ -21,13 +16,13 @@ class LoggingClient implements ClientInterface
     /**
      * @var integer
      */
-    protected $totalDuration;
+    protected  $totalDuration;
 
-    public function __construct(LoggingInterface $logger, ClientInterface $client)
+    public function __construct(ClientInterface $client)
     {
         $this->client = $client;
-        $this->logger = $logger;
         $this->totalDuration = 0;
+        $this->stack = new \SplStack();
     }
 
     /**
@@ -62,9 +57,9 @@ class LoggingClient implements ClientInterface
     {
         $start = microtime(true);
         $response = $this->client->request($path, $method, $data, $headers);
-        $duration = $start - microtime(true);
+        $duration = microtime(true) - $start;
 
-        $this->logger->log(array(
+        $this->stack->push(array(
             'duration'         => $duration,
 
             'request_method'   => $method,
@@ -83,22 +78,21 @@ class LoggingClient implements ClientInterface
     }
 
     /**
-     * Get the logger
-     *
-     * @return LoggingInterface
+     * Gets the total duration
+     * @return int
      */
-    public function getLogger()
+    public function getTotalDuration()
     {
-        return $this->logger;
+        return $this->totalDuration;
     }
 
     /**
-     * Sets the new logger
+     * Get the logging stack
      *
-     * @param LoggingInterface $logger
+     * @return \SplStack
      */
-    public function setLogger(LoggingInterface $logger)
+    public function getStack()
     {
-        $this->logger = $logger;
+        return $this->stack;
     }
 }
