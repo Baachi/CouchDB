@@ -52,7 +52,7 @@ class LoggingClient implements ClientInterface
      * Request
      *
      * @param string $path
-     * @param constant $method
+     * @param string $method
      * @param string $data
      * @param array $headers
      *
