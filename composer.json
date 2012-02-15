@@ -5,7 +5,7 @@
     "keywords": ["CouchDB", "Abstraction Layer"],
     "homepage": "https://github.com/Baachi/CouchDB",
     "licence": "MIT",
-    "authores": [
+    "authors": [
         {
             "name": "Markus Bachmann",
             "email": "markus.bachmann@bachi.biz",
