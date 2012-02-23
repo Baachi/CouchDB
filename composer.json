@@ -1,8 +1,8 @@
 {
-    "name": "bachi/couchdb",
+    "name": "couchdb/couchdb",
     "version": "0.8",
     "description": "CouchDB Client for PHP >=5.3",
-    "keywords": ["CouchDB", "Abstraction Layer"],
+    "keywords": ["CouchDB", "Abstraction Layer", "Database", "NoSQL"],
     "homepage": "https://github.com/Baachi/CouchDB",
     "licence": "MIT",
     "authors": [
