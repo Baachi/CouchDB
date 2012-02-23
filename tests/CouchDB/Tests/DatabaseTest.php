@@ -36,6 +36,15 @@ class DatabaseTest extends TestCase
         $this->assertInternalType('array', $info);
         $this->assertArrayHasKey('db_name', $info);
         $this->assertEquals('test', $info['db_name']);
+
+        $this->assertArrayHasKey('compact_running', $info);
+        $this->assertArrayHasKey('disk_format_version', $info);
+        $this->assertArrayHasKey('disk_size', $info);
+        $this->assertArrayHasKey('doc_count', $info);
+        $this->assertArrayHasKey('doc_del_count', $info);
+        $this->assertArrayHasKey('instance_start_time', $info);
+        $this->assertArrayHasKey('purge_seq', $info);
+        $this->assertArrayHasKey('update_seq', $info);
     }
 
     public function testInsertWithOutId()
@@ -136,5 +145,13 @@ class DatabaseTest extends TestCase
     {
         $batchUpdater = $this->db->createBatchUpdater();
         $this->assertInstanceOf('CouchDB\\Util\\BatchUpdater', $batchUpdater);
+    }
+
+    public function testGetChanges()
+    {
+        $changes = $this->db->getChanges();
+        $this->assertInternalType('array', $changes);
+        $this->assertArrayHasKey('results', $changes);
+        $this->assertArrayHasKey('last_seq', $changes);
     }
 }

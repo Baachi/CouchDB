@@ -255,6 +255,25 @@ class Database
     }
 
     /**
+     * Return informations about the last changes from the database
+     *
+     * @return array
+     *
+     * @throws \RuntimeException If the request was not successfull
+     */
+    public function getChanges()
+    {
+        $this->conn->initialize();
+        $response = $this->conn->getClient()->request("/{$this->name}/_changes");
+
+        if (false === $response->isSuccessful()) {
+            throw new \RuntimeException('Request wasn\'t successfull');
+        }
+
+        return JSONEncoder::decode($response->getContent());
+    }
+
+    /**
      * Return the database name
      *
      * @return string
