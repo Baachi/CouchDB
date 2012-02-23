@@ -3,6 +3,7 @@ namespace CouchDB;
 
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
+use CouchDB\Encoder\JSONEncoder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -59,7 +60,7 @@ class Database
         $this->conn->initialize();
         $response = $this->conn->getClient()->request("/{$this->name}/{$id}");
         $json     = $response->getContent();
-        $doc      = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        $doc      = JSONEncoder::decode($json);
 
         if (404 === $response->getStatusCode()) {
             throw new \RuntimeException('Document does not exist');
@@ -89,7 +90,7 @@ class Database
         }
 
         $json = $this->conn->getClient()->request($path)->getContent();
-        $docs = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        $docs = JSONEncoder::decode($json);
 
         return $docs;
     }
@@ -106,7 +107,6 @@ class Database
     public function findDocuments(array $ids, $limit = null, $offset = null)
     {
         $this->conn->initialize();
-        $encoder = $this->conn->getConfiguration()->getEncoder();
 
         $path = "/{$this->name}/_all_docs?include_docs=true";
 
@@ -117,7 +117,7 @@ class Database
             $path .= '&skip=' . (integer) $offset;
         }
 
-        $json = $encoder->encode(array('keys' => $ids));
+        $json = JSONEncoder::encode(array('keys' => $ids));
 
         $response = $this->conn->getClient()->request(
             $path,
@@ -126,7 +126,7 @@ class Database
             array('Content-Type' => 'application/json')
         );
 
-        $value = $encoder->decode($response->getContent());
+        $value = JSONEncoder::decode($response->getContent());
         return $value;
     }
 
@@ -139,7 +139,7 @@ class Database
     public function insert(array & $doc)
     {
         $this->conn->initialize();
-        $json = $this->conn->getConfiguration()->getEncoder()->encode($doc);
+        $json = JSONEncoder::encode($doc);
 
         if (isset($doc['_id'])) {
             $response = $this->conn->getClient()->request(
@@ -166,7 +166,7 @@ class Database
             ));
         }
 
-        $value = $this->conn->getConfiguration()->getEncoder()->decode($response->getContent());
+        $value  = JSONEncoder::decode($response->getContent());
         $status = $value['ok'];
         $id     = $value['id'];
         $rev    = $value['rev'];
@@ -187,8 +187,7 @@ class Database
     {
         $this->conn->initialize();
 
-        $encoder = $this->getConnection()->getConfiguration()->getEncoder();
-        $json = $encoder->encode($doc);
+        $json = JSONEncoder::encode($doc);
 
         $response = $this->getConnection()->getClient()->request(
             "{$this->name}/{$id}",
@@ -201,7 +200,7 @@ class Database
             throw new \RuntimeException('Unable to save document');
         }
 
-        $value = $encoder->decode($response->getContent());
+        $value = JSONEncoder::decode($response->getContent());
         $id = $value['id'];
         $rev = $value['rev'];
 
@@ -251,7 +250,7 @@ class Database
     {
         $this->conn->initialize();
         $json = $this->conn->getClient()->request("/{$this->name}/")->getContent();
-        $info = $this->conn->getConfiguration()->getEncoder()->decode($json);
+        $info = JSONEncoder::decode($json);
         return $info;
     }
 

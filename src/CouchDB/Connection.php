@@ -3,6 +3,7 @@ namespace CouchDB;
 
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
+use CouchDB\Encoder\JSONEncoder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -20,16 +21,10 @@ class Connection
      */
     private $dispatcher;
 
-    /**
-     * @var \CouchDB\Configuration
-     */
-    private $configuration;
-
-    public function __construct(ClientInterface $client, Configuration $config = null, EventDispatcher $dispatcher = null)
+    public function __construct(ClientInterface $client, EventDispatcher $dispatcher = null)
     {
         $this->client = $client;
         $this->dispatcher = $dispatcher ?: new EventDispatcher();
-        $this->configuration = $config ?: new Configuration();
     }
 
     /**
@@ -60,16 +55,6 @@ class Connection
     public function getEventDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    /**
-     * Get the configuration
-     *
-     * @return Configuration
-     */
-    public function getConfiguration()
-    {
-        return $this->configuration;
     }
 
     /**
@@ -111,7 +96,7 @@ class Connection
     {
         $this->initialize();
         $json  = $this->client->request('/')->getContent();
-        $value = $this->configuration->getEncoder()->decode($json);
+        $value = JSONEncoder::decode($json);
 
         return $value['version'];
     }
@@ -125,7 +110,7 @@ class Connection
     {
         $this->initialize();
         $json      = $this->client->request('/_all_dbs')->getContent();
-        $databases = $this->configuration->getEncoder()->decode($json);
+        $databases = JSONEncoder::decode($json);
         return $databases;
     }
 
@@ -151,7 +136,7 @@ class Connection
         }
 
         $json = $response->getContent();
-        $status = $this->configuration->getEncoder()->decode($json);
+        $status = JSONEncoder::decode($json);
 
         if ($this->dispatcher->hasListeners(Events::postDropDatabase)) {
             $this->dispatcher->dispatch(Events::postDropDatabase, new EventArgs($this, $name));
@@ -226,7 +211,7 @@ class Connection
         }
 
         $json      = $response->getContent();
-        $value     = $this->configuration->getEncoder()->decode($json);
+        $value     = JSONEncoder::decode($json);
 
         if (isset($value['error'])) {
             throw new \RuntimeException(sprintf('[%s] Failed to create database %s. (%s)', $value['error'], $name, $value['reason']));

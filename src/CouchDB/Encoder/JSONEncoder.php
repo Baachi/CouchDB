@@ -7,7 +7,7 @@ use CouchDB\Exception\JsonEncodeException;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class NativeEncoder implements EncoderInterface
+class JSONEncoder implements EncoderInterface
 {
     /**
      * Encode a value into json
@@ -16,7 +16,7 @@ class NativeEncoder implements EncoderInterface
      * @throws JsonEncodeException
      * @return string
      */
-    public function encode($value)
+    static public function encode($value)
     {
         $json = @json_encode($value);
         if ("null" === $json && $value !== null) {
@@ -32,7 +32,7 @@ class NativeEncoder implements EncoderInterface
      * @throws JsonDecodeException
      * @return mixed
      */
-    public function decode($json)
+    static public function decode($json)
     {
         $value = json_decode($json, true);
         if (!$value) {

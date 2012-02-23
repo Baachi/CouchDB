@@ -2,7 +2,7 @@
 namespace CouchDB\Tests\Encoder;
 
 use CouchDB\Tests\TestCase;
-use CouchDB\Encoder\NativeEncoder;
+use CouchDB\Encoder\JSONEncoder;
 use CouchDB\Exception\JsonDecodeException;
 use CouchDB\Exception\JsonEncodeException;
 
@@ -11,17 +11,12 @@ use CouchDB\Exception\JsonEncodeException;
  */
 class NativeEncoderTest extends TestCase
 {
-    protected function setUp()
-    {
-        $this->encoder = new NativeEncoder();
-    }
-
     /**
      * @dataProvider getEncodeData
      */
     public function testEncode($value, $expected)
     {
-        $this->assertEquals($expected, $this->encoder->encode($value));
+        $this->assertEquals($expected, JSONEncoder::encode($value));
     }
 
     /**
@@ -29,13 +24,13 @@ class NativeEncoderTest extends TestCase
      */
     public function testDecode($json, $expected)
     {
-        $this->assertEquals($expected, $this->encoder->decode($json));
+        $this->assertEquals($expected, JSONEncoder::decode($json));
     }
 
     public function testInvalidDecode()
     {
         try {
-            $this->encoder->decode('[invalid}');
+            JSONEncoder::decode('[invalid}');
             $this->fail();
         } catch (JsonDecodeException $e) {
             $this->assertEquals('Json decode error [Syntax error]: [invalid}', $e->getMessage());
@@ -45,7 +40,7 @@ class NativeEncoderTest extends TestCase
     public function testInvalidEncode()
     {
         $this->setExpectedException('CouchDB\\Exception\\JsonEncodeException');
-        $this->encoder->encode("\xB1\x31");
+        JSONEncoder::encode("\xB1\x31");
     }
 
     static public function getEncodeData()

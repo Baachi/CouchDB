@@ -13,7 +13,7 @@ interface EncoderInterface
      * @throws JsonEncodeException
      * @return string
      */
-    function encode($value);
+    static function encode($value);
 
     /**
      * Decode a json string
@@ -22,5 +22,5 @@ interface EncoderInterface
      * @throws JsonDecodeException
      * @return mixed
      */
-    function decode($json);
+    static function decode($json);
 }

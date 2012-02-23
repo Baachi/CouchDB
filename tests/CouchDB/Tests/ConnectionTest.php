@@ -124,11 +124,6 @@ class ConnectionTest extends TestCase
         $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventDispatcher', $this->conn->getEventDispatcher());
     }
 
-    public function testGetConfiguration()
-    {
-        $this->assertInstanceOf('CouchDB\\Configuration', $this->conn->getConfiguration());
-    }
-
     public function testMagicFunctions()
     {
         $this->conn->createDatabase('test');

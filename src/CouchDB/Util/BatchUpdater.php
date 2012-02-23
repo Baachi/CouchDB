@@ -2,6 +2,7 @@
 namespace CouchDB\Util;
 
 use CouchDB\Http\ClientInterface;
+use CouchDB\Encoder\JSONEncoder;
 use CouchDB\Database;
 
 /**
@@ -37,8 +38,7 @@ class BatchUpdater
 
     public function execute()
     {
-        $encoder = $this->database->getConnection()->getConfiguration()->getEncoder();
-        $json    = $encoder->encode($this->data);
+        $json    = JSONEncoder::encode($this->data);
 
         $response = $this->client->request(
             "/{$this->database->getName()}/_bulk_docs",
@@ -49,6 +49,6 @@ class BatchUpdater
             )
         );
 
-        return $encoder->decode($response->getContent());
+        return JSONEncoder::decode($response->getContent());
     }
 }
