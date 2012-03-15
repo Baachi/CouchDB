@@ -60,14 +60,14 @@ $database = $conn->createDatabase('foobar');
 $database = $conn->foobar;
 ```
 
-### Gets a database ###
+### Get a database instance ###
 
 ``` php
 <?php
 $database = $conn->selectDatabase('foobar');
 // or with magic method
 $database = $conn->foobar;
-
+```
 ### Delete a database ###
 
 ```php
