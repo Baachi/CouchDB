@@ -7,9 +7,8 @@ $loader = new \Symfony\Component\ClassLoader\UniversalClassLoader();
 $loader->registerNamespaces(array(
     'CouchDB\\Tests'  => __DIR__ . '/tests',
     'CouchDB'         => __DIR__ . '/src',
-    'Buzz'            => __DIR__ . '/vendor/buzz/lib',
     'Symfony'         => __DIR__ . '/vendor/symfony/src',
-    'Guzzle'          => __DIR__ . '/vendor/guzzle/src',
+    'Doctrine\\Common'=> __DIR__ . '/vendor/doctrine-common/lib',
 ));
 
 $loader->register();

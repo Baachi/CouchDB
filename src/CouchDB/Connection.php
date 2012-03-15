@@ -4,7 +4,7 @@ namespace CouchDB;
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Doctrine\Common\EventManager;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -17,14 +17,14 @@ class Connection
     private $client;
 
     /**
-     * @var \Symfony\Component\EventDispatcher\EventDispatcher
+     * @var \Doctrine\Common\EventManager
      */
-    private $dispatcher;
+    private $eventManager;
 
-    public function __construct(ClientInterface $client, EventDispatcher $dispatcher = null)
+    public function __construct(ClientInterface $client, EventManager $dispatcher = null)
     {
         $this->client = $client;
-        $this->dispatcher = $dispatcher ?: new EventDispatcher();
+        $this->eventManager = $dispatcher ?: new EventManager();
     }
 
     /**
@@ -50,11 +50,11 @@ class Connection
     /**
      * Return the event dispatcher
      *
-     * @return \Symfony\Component\EventDispatcher\EventDispatcher
+     * @return \Doctrine\Common\EventManager
      */
-    public function getEventDispatcher()
+    public function getEventManager()
     {
-        return $this->dispatcher;
+        return $this->eventManager;
     }
 
     /**
@@ -66,14 +66,14 @@ class Connection
             return;
         }
 
-        if ($this->dispatcher->hasListeners(Events::preConnect)) {
-            $this->dispatcher->dispatch(Events::preConnect, new EventArgs($this));
+        if ($this->eventManager->hasListeners(Events::preConnect)) {
+            $this->eventManager->dispatchEvent(Events::preConnect, new EventArgs($this));
         }
 
         $this->client->connect();
 
-        if ($this->dispatcher->hasListeners(Events::postConnect)) {
-            $this->dispatcher->dispatch(Events::postConnect, new EventArgs($this));
+        if ($this->eventManager->hasListeners(Events::postConnect)) {
+            $this->eventManager->dispatchEvent(Events::postConnect, new EventArgs($this));
         }
     }
 
@@ -123,8 +123,8 @@ class Connection
     public function dropDatabase($name)
     {
         $this->initialize();
-        if ($this->dispatcher->hasListeners(Events::preDropDatabase)) {
-            $this->dispatcher->dispatch(Events::preDropDatabase, new EventArgs($this, $name));
+        if ($this->eventManager->hasListeners(Events::preDropDatabase)) {
+            $this->eventManager->dispatchEvent(Events::preDropDatabase, new EventArgs($this, $name));
         }
 
         $name = urlencode($name);
@@ -138,8 +138,8 @@ class Connection
         $json = $response->getContent();
         $status = JSONEncoder::decode($json);
 
-        if ($this->dispatcher->hasListeners(Events::postDropDatabase)) {
-            $this->dispatcher->dispatch(Events::postDropDatabase, new EventArgs($this, $name));
+        if ($this->eventManager->hasListeners(Events::postDropDatabase)) {
+            $this->eventManager->dispatchEvent(Events::postDropDatabase, new EventArgs($this, $name));
         }
 
         return isset($status['ok']) && $status['ok'] === true;
@@ -200,8 +200,8 @@ class Connection
 
         $name = urlencode($name);
 
-        if ($this->dispatcher->hasListeners(Events::preCreateDatabase)) {
-            $this->dispatcher->dispatch(Events::preCreateDatabase, new EventArgs($this, $name));
+        if ($this->eventManager->hasListeners(Events::preCreateDatabase)) {
+            $this->eventManager->dispatchEvent(Events::preCreateDatabase, new EventArgs($this, $name));
         }
 
         $response  = $this->client->request("/{$name}/", ClientInterface::METHOD_PUT);
@@ -219,8 +219,8 @@ class Connection
 
         $database = $this->wrapDatabase($name);
 
-        if ($this->dispatcher->hasListeners(Events::postCreateDatabase)) {
-            $this->dispatcher->dispatch(Events::postCreateDatabase, new EventArgs($database));
+        if ($this->eventManager->hasListeners(Events::postCreateDatabase)) {
+            $this->eventManager->dispatchEvent(Events::postCreateDatabase, new EventArgs($database));
         }
 
         return $database;

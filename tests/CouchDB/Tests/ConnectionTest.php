@@ -119,9 +119,9 @@ class ConnectionTest extends TestCase
         $this->conn->setClient($client);
     }
 
-    public function testGetEventDispatcher()
+    public function testGetEventManager()
     {
-        $this->assertInstanceOf('Symfony\Component\EventDispatcher\EventDispatcher', $this->conn->getEventDispatcher());
+        $this->assertInstanceOf('Doctrine\\Common\\EventManager', $this->conn->getEventManager());
     }
 
     public function testMagicFunctions()

@@ -1,12 +1,12 @@
 <?php
 namespace CouchDB\Events;
 
-use Symfony\Component\EventDispatcher\Event;
+use Doctrine\Common\EventArgs as BaseEventArgs;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class EventArgs extends Event
+class EventArgs extends BaseEventArgs
 {
     protected $invoker;
 
