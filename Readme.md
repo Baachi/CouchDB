@@ -46,7 +46,7 @@ require_once '/path/to/couchdb/autoload.php.dist';
 ``` php
 <?php
 require_once '/path/to/couchdb/autoload.php.dist';
-$client = new \CouchDB\Http\StreamClient('localhost', 5984');
+$client = new \CouchDB\Http\StreamClient('localhost', 5984);
 $connection = new \CouchDB\Connection($client);
 ```
 
