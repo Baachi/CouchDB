@@ -9,7 +9,7 @@ use CouchDB\Exception\JsonEncodeException;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class NativeEncoderTest extends TestCase
+class JSONEncoderTest extends TestCase
 {
     /**
      * @dataProvider getEncodeData
@@ -39,6 +39,9 @@ class NativeEncoderTest extends TestCase
 
     public function testInvalidEncode()
     {
+        if (version_compare(PHP_VERSION, '5.3.2', '<=')) {
+            $this->markTestSkipped('JSON_ERROR_UTF8 is only available in php version >5.3.2');
+        }
         $this->setExpectedException('CouchDB\\Exception\\JsonEncodeException');
         JSONEncoder::encode("\xB1\x31");
     }
