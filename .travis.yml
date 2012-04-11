@@ -6,7 +6,7 @@ php:
 
 before_script:
     - curl -s http://getcomposer.org/installer | php
-    - composer.phar update
+    - php composer.phar update
 
 script: phpunit
 
