@@ -8,14 +8,11 @@
     "authors": [
         {
             "name": "Markus Bachmann",
-            "email": "markus.bachmann@bachi.biz",
-            "hompage": "bachi.biz"
+            "email": "markus.bachmann@bachi.biz"
         }
     ],
     "require": {
         "php": ">=5.3.2",
-        "couchdb": ">=1.0.2",
-        "symfony/class-loader": "2.0.*",
         "doctrine/common": "2.2.0"
     }
 }

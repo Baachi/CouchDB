@@ -1,11 +1,12 @@
 language: php
 php:
+    - 5.3.2
     - 5.3
     - 5.4
 
 before_script:
-    - git submodule init
-    - git submodule update --init
+    - curl -s http://getcomposer.org/installer | php
+    - composer.phar update
 
 script: phpunit
 
