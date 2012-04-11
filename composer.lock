@@ -1,0 +1,10 @@
+{
+    "hash": "243858fe03ede369b2dc1c2320e403ba",
+    "packages": [
+        {
+            "package": "doctrine/common",
+            "version": "2.2.0"
+        }
+    ],
+    "aliases": []
+}
