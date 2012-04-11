@@ -28,7 +28,7 @@ You can install CouchDB Client over composer. Add the following line into your `
 
 ```
 "requires": {
-    "bachi/couchdb": "*"
+    "couchdb/couchdb": "*"
 }
 ```
 
