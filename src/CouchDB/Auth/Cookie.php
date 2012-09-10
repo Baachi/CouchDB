@@ -9,12 +9,14 @@ class Cookie implements AuthInterface {
 
     private $authCookie;
 
-    public function __construct($login, $password) {
+    public function __construct($login, $password)
+    {
         $this->login = $login;
         $this->password = $password;
     }
 
-    public function authorize(Http\ClientInterface $client) {
+    public function authorize(Http\ClientInterface $client)
+    {
         $response = $client->request(
             '/_session',
             Http\ClientInterface::METHOD_POST,
@@ -23,15 +25,20 @@ class Cookie implements AuthInterface {
         );
 
         $this->authCookie = self::extractCookie($response);
+        return $this;
     }
 
-    public function getHeaders() {
-        return array(
-            'Cookie' => 'AuthSession=' . $this->authCookie
-        );
+    public function getHeaders()
+    {
+        return $this->authCookie ?
+                array(
+                    'Cookie' => 'AuthSession=' . $this->authCookie
+                )
+                : array();
     }
 
-    private static function extractCookie(Http\Response\ResponseInterface $response = null) {
+    private static function extractCookie(Http\Response\ResponseInterface $response = null)
+    {
         if (
             $response
             && ($response->getStatusCode() == 200)

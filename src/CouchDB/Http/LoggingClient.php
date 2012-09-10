@@ -1,6 +1,8 @@
 <?php
 namespace CouchDB\Http;
 
+use CouchDB\Auth;
+
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
@@ -28,9 +30,9 @@ class LoggingClient implements ClientInterface
     /**
      * Connect to server
      */
-    public function connect()
+    public function connect(Auth\AuthInterface $auth = null)
     {
-        return $this->client->connect();
+        return $this->client->connect($auth);
     }
 
     /**
