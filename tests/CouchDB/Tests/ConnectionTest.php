@@ -31,7 +31,7 @@ class ConnectionTest extends TestCase
     public function testListDatabases()
     {
         $databases = $this->conn->listDatabases();
-        $this->assertEquals(array('_users'), $databases);
+        $this->assertContains('_users', $databases);
     }
 
     public function testGetDatabase()
