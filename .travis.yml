@@ -10,6 +10,9 @@ before_script:
 
 script: phpunit
 
+services:
+  - couchdb
+
 notifications:
     email:
-        - info@bachi.biz
+        - maxim@xiag.ch
