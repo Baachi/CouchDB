@@ -2,7 +2,7 @@
 namespace CouchDB\Tests;
 
 use CouchDB\Connection;
-use CouchDB\Http\BuzzClient;
+use CouchDB\Http\Response\Response;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -30,7 +30,21 @@ class ConnectionTest extends TestCase
 
     public function testListDatabases()
     {
-        $databases = $this->conn->listDatabases();
+        $response = new Response(200, '["_users"]', array());
+
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/_all_dbs')
+            ->will($this->returnValue($response));
+
+        $client->expects($this->once())
+            ->method('isConnected')
+            ->will($this->returnValue(true));
+
+        $conn = new Connection($client);
+
+        $databases = $conn->listDatabases();
         $this->assertEquals(array('_users'), $databases);
     }
 
