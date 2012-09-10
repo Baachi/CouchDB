@@ -1,12 +1,18 @@
 <?php
 namespace CouchDB\Http;
 
+use CouchDB\Auth;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 abstract class AbstractClient implements ClientInterface
 {
     protected $options;
+
+    /**
+     * @var Auth\AuthInterface
+     */
+    protected $authAdapter;
 
     public function __construct(array $options)
     {

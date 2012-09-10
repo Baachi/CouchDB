@@ -1,6 +1,8 @@
 <?php
 namespace CouchDB\Http;
 
+use CouchDB\Auth;
+
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
@@ -31,13 +33,19 @@ class SocketClient extends AbstractClient
     /**
      * Connect to server
      */
-    public function connect()
+    public function connect(Auth\AuthInterface $auth = null)
     {
         $this->resource = fsockopen($this->getOption('host'), $this->getOption('port'), $errno, $errstr, $this->getOption('timeout'));
         if (!$this->resource) {
             $this->resource = null;
             throw new \RuntimeException(sprintf('Unable to connect to %s (%s)', $this->getOption('host'), $errstr));
         }
+
+        if ($auth) {
+            $this->authAdapter = $auth;
+            $this->authAdapter->authorize($this);
+        }
+
     }
 
     /**
@@ -62,6 +70,10 @@ class SocketClient extends AbstractClient
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
+        if ($this->authAdapter) {
+            $headers = array_merge($headers, $this->authAdapter->getHeaders());
+        }
+
         $request = $this->buildRequest($path, strtoupper($method), $headers, $data);
 
         if (!$this->isConnected()) {

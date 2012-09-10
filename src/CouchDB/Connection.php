@@ -1,6 +1,7 @@
 <?php
 namespace CouchDB;
 
+use CouchDB\Auth;
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
@@ -12,6 +13,11 @@ use Doctrine\Common\EventManager;
 class Connection
 {
     /**
+     * @var Auth\AuthInterface
+     */
+    private $authAdapter;
+
+    /**
      * @var \CouchDB\Http\ClientInterface
      */
     private $client;
@@ -21,10 +27,13 @@ class Connection
      */
     private $eventManager;
 
-    public function __construct(ClientInterface $client, EventManager $dispatcher = null)
+    public function __construct(ClientInterface $client,
+                                EventManager $dispatcher = null,
+                                Auth\AuthInterface $authAdapter = null)
     {
         $this->client = $client;
         $this->eventManager = $dispatcher ?: new EventManager();
+        $this->authAdapter = $authAdapter;
     }
 
     /**
@@ -70,7 +79,7 @@ class Connection
             $this->eventManager->dispatchEvent(Events::preConnect, new EventArgs($this));
         }
 
-        $this->client->connect();
+        $this->client->connect($this->authAdapter);
 
         if ($this->eventManager->hasListeners(Events::postConnect)) {
             $this->eventManager->dispatchEvent(Events::postConnect, new EventArgs($this));
