@@ -3,7 +3,8 @@ namespace CouchDB\Auth;
 
 use CouchDB\Http;
 
-class CookieTest extends \PHPUnit_Framework_TestCase {
+class CookieTest extends \PHPUnit_Framework_TestCase
+{
 
     public function testIsAuthAdapter()
     {

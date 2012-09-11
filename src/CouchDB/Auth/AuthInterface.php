@@ -2,7 +2,8 @@
 namespace CouchDB\Auth;
 use CouchDB\Http\ClientInterface;
 
-interface AuthInterface {
+interface AuthInterface
+{
 
     /**
      * @param ClientInterface $client

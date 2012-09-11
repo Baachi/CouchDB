@@ -51,7 +51,7 @@ class RealAuthorizationTest extends TestCase
         $this->createTestConnection()->getClient()->request(
             '_config/admins/' . self::LOGIN,
             Http\ClientInterface::METHOD_PUT,
-                '"' . self::PWD . '"'
+            '"' . self::PWD . '"'
         );
     }
 

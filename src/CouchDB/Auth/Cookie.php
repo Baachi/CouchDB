@@ -2,7 +2,8 @@
 namespace CouchDB\Auth;
 use CouchDB\Http;
 
-class Cookie implements AuthInterface {
+class Cookie implements AuthInterface
+{
 
     private $login;
     private $password;
@@ -31,10 +32,7 @@ class Cookie implements AuthInterface {
     public function getHeaders()
     {
         return $this->authCookie ?
-                array(
-                    'Cookie' => 'AuthSession=' . $this->authCookie
-                )
-                : array();
+            array('Cookie' => 'AuthSession=' . $this->authCookie) : array();
     }
 
     private static function extractCookie(Http\Response\ResponseInterface $response = null)

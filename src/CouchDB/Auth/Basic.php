@@ -2,7 +2,8 @@
 namespace CouchDB\Auth;
 use CouchDB\Http;
 
-class Basic implements AuthInterface {
+class Basic implements AuthInterface
+{
 
     private $login;
     private $password;
