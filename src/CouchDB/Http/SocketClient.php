@@ -84,32 +84,21 @@ class SocketClient extends AbstractClient
             throw new \RuntimeException('Could not send request');
         }
 
-        $headers   = array();
-        $status    = '';
-        $content   = '';
-
-        $rawContent = array();
+        $rawHeader = '';
         while (strlen($line = trim(fgets($this->resource, 4096)))) {
-            $rawContent[] = $line;
-        }
-        foreach ($rawContent as $line) {
-            if (preg_match('@^HTTP/([\d\.]+)\s*(\d+)\s*.*$@i', $line, $matches)) {
-                $status = $matches[2];
-                $headers['version'] = $matches[1];
-            } else {
-                list($key, $value) = explode(':', $line, 2);
-                $headers[strtolower($key)] = trim($value);
-            }
+            $rawHeader .= $line . "\n";
         }
 
-        $bytesToRead = isset($headers['content-length']) ? $headers['content-length'] : 0;
+        return new Response\Response(
+            self::readHttpCode($rawHeader),
+            self::readContent($this->resource, $rawHeader),
+            self::readHeaders($rawHeader)
+        );
+    }
 
-        while ( $bytesToRead > 0 ) {
-            $content .= $line = fgets($this->resource, $bytesToRead + 1);
-            $bytesToRead -= strlen($line);
-        }
-
-        return new Response\Response($status, $content, $headers);
+    public function setTestConnection($resource)
+    {
+        $this->resource = $resource;
     }
 
     /**
@@ -149,4 +138,36 @@ class SocketClient extends AbstractClient
 
         return $string . "\n\n";
     }
+
+    private static function readHttpCode($rawHeader)
+    {
+        return preg_match('@^HTTP/[\d\.]+ (\d+)@i', $rawHeader, $regs) ? $regs[1] : null;
+    }
+
+    private static function readContent($resource, $rawHeader)
+    {
+        $bytesToRead = preg_match('@content\-length: (\d+)@i', $rawHeader, $regs) ? $regs[1] : 0;
+
+        $content = '';
+        do {
+            $content .= $line = fgets($resource, $bytesToRead);
+            $bytesToRead -= strlen($line);
+        }
+        while (($bytesToRead > 0) && ($line !== false));
+
+        return $content;
+    }
+
+    private static function readHeaders($rawHeader)
+    {
+        $headers = array();
+        foreach (explode("\n", $rawHeader) as $line) {
+            if (strpos($line, ':') !== false) {
+                list($key, $value) = explode(':', $line, 2);
+                $headers[strtolower($key)] = trim($value);
+            }
+        }
+        return $headers;
+    }
+
 }
