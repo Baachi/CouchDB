@@ -5,17 +5,35 @@ use CouchDB\Http;
 class Cookie implements AuthInterface
 {
 
+    /**
+     * @var string
+     */
     private $login;
+
+    /**
+     * @var string
+     */
     private $password;
 
+    /**
+     * @var string
+     */
     private $authCookie;
 
+    /**
+     * @param string $login
+     * @param string $password
+     */
     public function __construct($login, $password)
     {
         $this->login = $login;
         $this->password = $password;
     }
 
+    /**
+     * @param Http\ClientInterface $client
+     * @return AuthInterface|Cookie
+     */
     public function authorize(Http\ClientInterface $client)
     {
         $response = $client->request(
@@ -26,9 +44,13 @@ class Cookie implements AuthInterface
         );
 
         $this->authCookie = self::extractCookie($response);
+
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders()
     {
         return $this->authCookie ?
@@ -42,8 +64,10 @@ class Cookie implements AuthInterface
             && ($response->getStatusCode() == 200)
             && $response->getHeader('set-cookie')
             && preg_match('/AuthSession=([^;]+);/i', $response->getHeader('set-cookie'), $regs)) {
+
             return $regs[1];
         }
+
         return null;
     }
 }
