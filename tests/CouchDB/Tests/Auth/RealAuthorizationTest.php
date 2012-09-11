@@ -28,6 +28,8 @@ class RealAuthorizationTest extends TestCase
     {
         $client = self::client();
         $this->assertEquals(401, $client->request('_config')->getStatusCode());
+
+        $client = self::client();
         $client->connect($auth);
         $this->assertEquals(200, $client->request('_config')->getStatusCode());
         $this->assertEquals(200, $client->request('_config')->getStatusCode());
