@@ -11,7 +11,6 @@ class SocketClientTest extends TestCase
 {
     protected function setUp()
     {
-        $this->markTestSkipped('Performance to low');
         $this->client = $this->getTestClient();
     }
 

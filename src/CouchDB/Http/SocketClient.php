@@ -89,16 +89,15 @@ class SocketClient extends AbstractClient
         $content   = '';
 
         $rawContent = array();
-        while (false !== $line = fgets($this->resource, 4096)) {
-            $rawContent[] = trim($line);
+        while (strlen($line = trim(fgets($this->resource, 4096)))) {
+            $rawContent[] = $line;
         }
-
         foreach ($rawContent as $line) {
             if (preg_match('@^HTTP/([\d\.]+)\s*(\d+)\s*.*$@i', $line, $matches)) {
                 $status = $matches[2];
                 $headers['version'] = $matches[1];
             } else {
-                list($key, $value) = explode(':'. $content, 2);
+                list($key, $value) = explode(':', $line, 2);
                 $headers[strtolower($key)] = trim($value);
             }
         }
@@ -148,6 +147,6 @@ class SocketClient extends AbstractClient
             $string .= "\n{$data}";
         }
 
-        return $string;
+        return $string . "\n\n";
     }
 }
