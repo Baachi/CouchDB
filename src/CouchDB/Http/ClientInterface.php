@@ -17,6 +17,8 @@ interface ClientInterface
 
     /**
      * Connect to server
+     * @param Auth\AuthInterface $auth
+     * @return ClientInterface
      */
     function connect(Auth\AuthInterface $auth = null);
 

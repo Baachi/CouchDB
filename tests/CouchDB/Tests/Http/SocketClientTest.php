@@ -9,14 +9,15 @@ use CouchDB\Http;
  */
 class SocketClientTest extends TestCase
 {
-    protected function setUp()
+
+    protected function tearDown()
     {
-        $this->client = $this->getTestClient();
+        self::client()->connect()->request('/test', 'DELETE');
     }
 
     public function testProcessRawSocketResponse()
     {
-        $client = new Http\SocketClient();
+        $client = self::client();
         $client->setTestConnection(self::connectionMock());
 
         $this->assertEquals(
@@ -36,36 +37,44 @@ class SocketClientTest extends TestCase
 
     }
 
+    public function testIsNotConnectedInitially()
+    {
+        $this->assertFalse(self::client()->isConnected());
+    }
+
     public function testConnect()
     {
-        $this->assertFalse($this->client->isConnected());
-        $this->client->connect();
-        $this->assertTrue($this->client->isConnected());
+        $this->assertTrue(self::client()->connect()->isConnected());
     }
 
     public function testPutRequest()
     {
-        $this->client->connect();
-        $response = $this->client->request('/test', 'PUT');
+        $response = self::client()->connect()->request('/test', 'PUT');
         $this->assertTrue($response->isSuccessful());
     }
 
     public function testPostRequest()
     {
-        $this->client->connect();
-        $response = $this->client->request('/_all_dbs', 'GET');
-        $this->assertInstanceOf('\\CouchDB\\Http\\Response\ResponseInterface', $response);
+        $response = self::client()->connect()->request('/_all_dbs', 'GET');
+        $this->assertInstanceOf('\CouchDB\Http\Response\ResponseInterface', $response);
         $this->assertTrue($response->isSuccessful());
         $this->assertInternalType('string', $response->getContent());
     }
 
-    protected function getTestClient()
+    public function testCanUseSameConnectionForMultipleRequests() {
+        $this->markTestIncomplete('It doesnt work by some reason');
+
+        $client = self::client();
+        $client->connect();
+        $client->request('/_all_dbs', 'GET');
+        $client->request('/_all_dbs', 'GET');
+        $client->request('/_users', 'GET');
+        $client->request('/', 'GET');
+    }
+
+    private static function client()
     {
-        static $c;
-        if (null === $c) {
-            $c = new Http\SocketClient();
-        }
-        return $c;
+        return new Http\SocketClient();
     }
 
     private static function connectionMock()

@@ -2,6 +2,9 @@
 namespace CouchDB\Auth;
 use CouchDB\Http\ClientInterface;
 
+/**
+ * @author Maxim Gnatenko <mgnatenko@gmail.com>
+ */
 interface AuthInterface
 {
 

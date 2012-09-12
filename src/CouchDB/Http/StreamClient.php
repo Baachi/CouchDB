@@ -35,6 +35,8 @@ class StreamClient extends AbstractClient
             $this->authAdapter = $auth;
             $this->authAdapter->authorize($this);
         }
+
+        return $this;
     }
 
     /**

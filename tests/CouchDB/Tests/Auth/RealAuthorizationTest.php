@@ -1,5 +1,5 @@
 <?php
-namespace CouchDB\Tests\Http;
+namespace CouchDB\Tests\Auth;
 
 use CouchDB\Tests\TestCase;
 use CouchDB\Http;
@@ -22,36 +22,34 @@ class RealAuthorizationTest extends TestCase
     }
 
     /**
-     * @dataProvider authAdaptersProvider
+     * @dataProvider authAdaptersAndHttpClientsProvider
      */
-    public function testUsesAuthAdapter($auth)
+    public function testStreamClientUsesAuthAdapter($clientClassName, $authAdapter)
     {
-        $client = self::client();
-        $this->assertEquals(401, $client->request('_config')->getStatusCode());
+        $client = new $clientClassName();
+        $client->connect();
+        $this->assertEquals(401, $client->request('/_config')->getStatusCode());
 
-        $client = self::client();
-        $client->connect($auth);
-        $this->assertEquals(200, $client->request('_config')->getStatusCode());
-        $this->assertEquals(200, $client->request('_config')->getStatusCode());
+        $client = new $clientClassName();
+        $client->connect($authAdapter);
+        $this->assertEquals(200, $client->request('/_config')->getStatusCode());
+        $this->assertEquals(200, $client->request('/_config')->getStatusCode());
     }
 
-    public static function client()
-    {
-        return new Http\StreamClient();
-    }
-
-    public static function authAdaptersProvider()
+    public static function authAdaptersAndHttpClientsProvider()
     {
         return array(
-            array(new Auth\Cookie(self::LOGIN, self::PWD)),
-            array(new Auth\Basic(self::LOGIN, self::PWD))
+            array('CouchDB\Http\StreamClient', new Auth\Cookie(self::LOGIN, self::PWD)),
+            array('CouchDB\Http\StreamClient', new Auth\Basic(self::LOGIN, self::PWD)),
+/*            array('CouchDB\Http\SocketClient', new Auth\Cookie(self::LOGIN, self::PWD)),
+            array('CouchDB\Http\SocketClient', new Auth\Basic(self::LOGIN, self::PWD))*/
         );
     }
 
     private function createServerAdmin()
     {
         $this->createTestConnection()->getClient()->request(
-            '_config/admins/' . self::LOGIN,
+            '/_config/admins/' . self::LOGIN,
             Http\ClientInterface::METHOD_PUT,
             '"' . self::PWD . '"'
         );
@@ -61,7 +59,7 @@ class RealAuthorizationTest extends TestCase
     {
         $conn = $this->createTestConnection();
         $conn->getClient()->connect(new Auth\Cookie(self::LOGIN, self::PWD));
-        $conn->getClient()->request('_config/admins/' . self::LOGIN,
+        $conn->getClient()->request('/_config/admins/' . self::LOGIN,
             Http\ClientInterface::METHOD_DELETE);
     }
 

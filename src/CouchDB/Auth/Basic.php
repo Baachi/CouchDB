@@ -2,6 +2,9 @@
 namespace CouchDB\Auth;
 use CouchDB\Http;
 
+/**
+ * @author Maxim Gnatenko <mgnatenko@gmail.com>
+ */
 class Basic implements AuthInterface
 {
 

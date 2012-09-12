@@ -46,6 +46,7 @@ class SocketClient extends AbstractClient
             $this->authAdapter->authorize($this);
         }
 
+        return $this;
     }
 
     /**
@@ -87,6 +88,10 @@ class SocketClient extends AbstractClient
         $rawHeader = '';
         while (strlen($line = trim(fgets($this->resource, 4096)))) {
             $rawHeader .= $line . "\n";
+        }
+
+        if (!strlen($rawHeader)) {
+            throw new \RuntimeException('Could not get response');
         }
 
         return new Response\Response(
