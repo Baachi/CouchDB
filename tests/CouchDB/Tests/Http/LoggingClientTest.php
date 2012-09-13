@@ -26,8 +26,10 @@ class LoggingClientTest extends TestCase
         $this->mockClient
             ->expects($this->any())
             ->method('request')
-            ->will($this->returnValue(
-                new Response(200, 'test', array())
+            ->will($this->returnCallback(function() {
+                usleep(1);
+                return new Response(200, 'test', array());
+            }
         ));
 
         $this->client = new LoggingClient($this->mockClient);

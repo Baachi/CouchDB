@@ -1,6 +1,8 @@
 <?php
 namespace CouchDB\Http;
 
+use CouchDB\Auth;
+
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
@@ -31,13 +33,20 @@ class SocketClient extends AbstractClient
     /**
      * Connect to server
      */
-    public function connect()
+    public function connect(Auth\AuthInterface $auth = null)
     {
         $this->resource = fsockopen($this->getOption('host'), $this->getOption('port'), $errno, $errstr, $this->getOption('timeout'));
         if (!$this->resource) {
             $this->resource = null;
             throw new \RuntimeException(sprintf('Unable to connect to %s (%s)', $this->getOption('host'), $errstr));
         }
+
+        if ($auth) {
+            $this->authAdapter = $auth;
+            $this->authAdapter->authorize($this);
+        }
+
+        return $this;
     }
 
     /**
@@ -62,6 +71,10 @@ class SocketClient extends AbstractClient
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
+        if ($this->authAdapter) {
+            $headers = array_merge($headers, $this->authAdapter->getHeaders());
+        }
+
         $request = $this->buildRequest($path, strtoupper($method), $headers, $data);
 
         if (!$this->isConnected()) {
@@ -72,33 +85,25 @@ class SocketClient extends AbstractClient
             throw new \RuntimeException('Could not send request');
         }
 
-        $headers   = array();
-        $status    = '';
-        $content   = '';
-
-        $rawContent = array();
-        while (false !== $line = fgets($this->resource, 4096)) {
-            $rawContent[] = trim($line);
+        $rawHeader = '';
+        while (strlen($line = trim(fgets($this->resource, 4096)))) {
+            $rawHeader .= $line . "\n";
         }
 
-        foreach ($rawContent as $line) {
-            if (preg_match('@^HTTP/([\d\.]+)\s*(\d+)\s*.*$@i', $line, $matches)) {
-                $status = $matches[2];
-                $headers['version'] = $matches[1];
-            } else {
-                list($key, $value) = explode(':'. $content, 2);
-                $headers[strtolower($key)] = trim($value);
-            }
+        if (!strlen($rawHeader)) {
+            throw new \RuntimeException('Could not get response');
         }
 
-        $bytesToRead = isset($headers['content-length']) ? $headers['content-length'] : 0;
+        return new Response\Response(
+            self::readHttpCode($rawHeader),
+            self::readContent($this->resource, $rawHeader),
+            self::readHeaders($rawHeader)
+        );
+    }
 
-        while ( $bytesToRead > 0 ) {
-            $content .= $line = fgets($this->resource, $bytesToRead + 1);
-            $bytesToRead -= strlen($line);
-        }
-
-        return new Response\Response($status, $content, $headers);
+    public function setTestConnection($resource)
+    {
+        $this->resource = $resource;
     }
 
     /**
@@ -136,6 +141,38 @@ class SocketClient extends AbstractClient
             $string .= "\n{$data}";
         }
 
-        return $string;
+        return $string . "\n\n";
     }
+
+    private static function readHttpCode($rawHeader)
+    {
+        return preg_match('@^HTTP/[\d\.]+ (\d+)@i', $rawHeader, $regs) ? $regs[1] : null;
+    }
+
+    private static function readContent($resource, $rawHeader)
+    {
+        $bytesToRead = preg_match('@content\-length: (\d+)@i', $rawHeader, $regs) ? $regs[1] : 0;
+
+        $content = '';
+        do {
+            $content .= $line = fgets($resource, $bytesToRead);
+            $bytesToRead -= strlen($line);
+        }
+        while (($bytesToRead > 0) && ($line !== false));
+
+        return $content;
+    }
+
+    private static function readHeaders($rawHeader)
+    {
+        $headers = array();
+        foreach (explode("\n", $rawHeader) as $line) {
+            if (strpos($line, ':') !== false) {
+                list($key, $value) = explode(':', $line, 2);
+                $headers[strtolower($key)] = trim($value);
+            }
+        }
+        return $headers;
+    }
+
 }

@@ -1,6 +1,8 @@
 <?php
 namespace CouchDB\Http;
 
+use CouchDB\Auth;
+
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
@@ -15,8 +17,10 @@ interface ClientInterface
 
     /**
      * Connect to server
+     * @param Auth\AuthInterface $auth
+     * @return ClientInterface
      */
-    function connect();
+    function connect(Auth\AuthInterface $auth = null);
 
     /**
      * Check if the client is connected to the server

@@ -3,6 +3,7 @@ namespace CouchDB\Tests;
 
 use CouchDB\Connection;
 use CouchDB\Http\Response\Response;
+use CouchDB\Http;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -148,5 +149,14 @@ class ConnectionTest extends TestCase
         $this->assertTrue(isset($this->conn->test));
         unset($this->conn->test);
         $this->assertFalse(isset($this->conn->test));
+    }
+
+    public function testUtilizesAuthAdapter()
+    {
+        $authAdapter = $this->getMock('CouchDB\Auth\AuthInterface');
+        $authAdapter->expects($this->once())->method('authorize');
+
+        $conn = new Connection(new Http\StreamClient(), null, $authAdapter);
+        $conn->initialize();
     }
 }

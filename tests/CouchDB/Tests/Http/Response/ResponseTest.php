@@ -46,4 +46,24 @@ class ResponseTest extends TestCase
         $response = new Response(500, '', array());
         $this->assertFalse($response->isSuccessful());
     }
+
+    /**
+     * @dataProvider successfulHttpCodesProvider
+     */
+    public function testSuccessfulCodes($code) {
+        $response = new Response($code, '', array());
+        $this->assertTrue($response->isSuccessful());
+    }
+
+    public static function successfulHttpCodesProvider() {
+        return array(
+            array(200),
+            array(201),
+            array(202),
+            array(203),
+            array(204),
+            array(205),
+            array(206),
+        );
+    }
 }
