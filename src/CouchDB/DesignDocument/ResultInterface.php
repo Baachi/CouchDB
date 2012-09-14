@@ -16,14 +16,14 @@ interface ResultInterface extends \IteratorAggregate, \Countable
     /**
      * Return the first row
      *
-     * @return false|array
+     * @return bool|array
      */
     public function getFirstRow();
 
     /**
      * Return the last row
      *
-     * @return false|array
+     * @return bool|array
      */
     public function getLastRow();
 

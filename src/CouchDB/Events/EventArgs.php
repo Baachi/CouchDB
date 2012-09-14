@@ -8,8 +8,14 @@ use Doctrine\Common\EventArgs as BaseEventArgs;
  */
 class EventArgs extends BaseEventArgs
 {
+    /**
+     * @var object
+     */
     protected $invoker;
 
+    /**
+     * @var mixed
+     */
     protected $data;
 
     public function __construct($invoker, &$data = null)

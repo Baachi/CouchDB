@@ -19,6 +19,12 @@ class Database
      */
     protected $name;
 
+    /**
+     * Constructor
+     *
+     * @param string $name
+     * @param Connection $conn
+     */
     public function __construct($name, Connection $conn)
     {
         $this->conn = $conn;

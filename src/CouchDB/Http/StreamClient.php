@@ -18,6 +18,9 @@ class StreamClient extends AbstractClient
         ) + $options);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getDefaultOptions()
     {
         return array(
@@ -26,11 +29,12 @@ class StreamClient extends AbstractClient
     }
 
     /**
-     * Connect to server
+     * {@inheritDoc}
      */
     public function connect(Auth\AuthInterface $auth = null)
     {
         $this->connected = true;
+
         if ($auth) {
             $this->authAdapter = $auth;
             $this->authAdapter->authorize($this);
@@ -40,9 +44,7 @@ class StreamClient extends AbstractClient
     }
 
     /**
-     * Check if the client is connected to the server
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function isConnected()
     {
@@ -50,14 +52,7 @@ class StreamClient extends AbstractClient
     }
 
     /**
-     * Request
-     *
-     * @param string   $path
-     * @param constant $method
-     * @param string   $data
-     * @param array    $headers
-     *
-     * @return \CouchDB\Http\Response\ResponseInterface
+     * {@inheritDoc}
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {

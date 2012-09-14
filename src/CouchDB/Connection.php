@@ -27,9 +27,14 @@ class Connection
      */
     private $eventManager;
 
-    public function __construct(ClientInterface $client,
-                                EventManager $dispatcher = null,
-                                Auth\AuthInterface $authAdapter = null)
+    /**
+     * Constructor
+     *
+     * @param Http\ClientInterface $client
+     * @param \Doctrine\Common\EventManager $dispatcher
+     * @param Auth\AuthInterface $authAdapter
+     */
+    public function __construct(ClientInterface $client, EventManager $dispatcher = null, Auth\AuthInterface $authAdapter = null)
     {
         $this->client = $client;
         $this->eventManager = $dispatcher ?: new EventManager();

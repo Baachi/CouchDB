@@ -15,6 +15,8 @@ interface AuthInterface
     public function authorize(ClientInterface $client);
 
     /**
+     * Get additional headers
+     *
      * @return array
      */
     public function getHeaders();

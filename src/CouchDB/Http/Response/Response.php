@@ -21,6 +21,13 @@ class Response implements ResponseInterface
      */
     protected $headers;
 
+    /**
+     * Constructor
+     *
+     * @param integer $status
+     * @param string $content
+     * @param array $headers
+     */
     public function __construct($status, $content, array $headers)
     {
         $this->statusCode = (integer) $status;
@@ -60,6 +67,18 @@ class Response implements ResponseInterface
         }
 
         return $this->headers[$name];
+    }
+
+    /**
+     * Return true if the http header exist, false otherwise.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasHeader($name)
+    {
+        return isset($this->headers[$name]);
     }
 
     /**

@@ -8,6 +8,9 @@ use CouchDB\Auth;
  */
 class SocketClient extends AbstractClient
 {
+    /**
+     * @var resource
+     */
     protected $resource;
 
     public function __construct($host = '127.0.0.1', $port = 5984, $timeout = 1000)
@@ -23,6 +26,9 @@ class SocketClient extends AbstractClient
         ));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getDefaultOptions()
     {
         return array(
@@ -31,7 +37,7 @@ class SocketClient extends AbstractClient
     }
 
     /**
-     * Connect to server
+     * {@inheritDoc}
      */
     public function connect(Auth\AuthInterface $auth = null)
     {
@@ -50,9 +56,7 @@ class SocketClient extends AbstractClient
     }
 
     /**
-     * Check if the client is connected to the server
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function isConnected()
     {
@@ -60,14 +64,7 @@ class SocketClient extends AbstractClient
     }
 
     /**
-     * Request
-     *
-     * @param string   $path
-     * @param constant $method
-     * @param string   $data
-     * @param array    $headers
-     *
-     * @return \CouchDB\Http\Response\ResponseInterface
+     * {@inheritDoc}
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
@@ -108,6 +105,7 @@ class SocketClient extends AbstractClient
 
     /**
      * Builds a HTTP request header
+     *
      * @param string $path
      * @param string $method
      * @param array  $headers
@@ -144,11 +142,26 @@ class SocketClient extends AbstractClient
         return $string . "\n\n";
     }
 
+    /**
+     * Extract the HTTP status code
+     *
+     * @param string $rawHeader
+     *
+     * @return integer|null
+     */
     private static function readHttpCode($rawHeader)
     {
-        return preg_match('@^HTTP/[\d\.]+ (\d+)@i', $rawHeader, $regs) ? $regs[1] : null;
+        return preg_match('@^HTTP/[\d\.]+ (\d+)@i', $rawHeader, $regs) ? (integer) $regs[1] : null;
     }
 
+    /**
+     * Extract the response body
+     *
+     * @param resoource $resource
+     * @param string    $rawHeader
+     *
+     * @return string
+     */
     private static function readContent($resource, $rawHeader)
     {
         $bytesToRead = preg_match('@content\-length: (\d+)@i', $rawHeader, $regs) ? $regs[1] : 0;
@@ -162,6 +175,13 @@ class SocketClient extends AbstractClient
         return $content;
     }
 
+    /**
+     * Extract all HTTP headers
+     *
+     * @param string $rawHeader
+     *
+     * @return array
+     */
     private static function readHeaders($rawHeader)
     {
         $headers = array();

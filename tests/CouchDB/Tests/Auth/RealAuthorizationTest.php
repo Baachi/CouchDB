@@ -27,10 +27,12 @@ class RealAuthorizationTest extends TestCase
     {
         $client = new $clientClassName();
         $client->connect();
-        $this->assertEquals(401, $client->request('/_config')->getStatusCode());
+
+        $this->assertEquals('{"error":"unauthorized","reason":"You are not a server admin."}', trim($client->request('/_config')->getContent()));
 
         $client = new $clientClassName();
         $client->connect($authAdapter);
+
         $this->assertEquals(200, $client->request('/_config')->getStatusCode());
         $this->assertEquals(200, $client->request('/_config')->getStatusCode());
     }
@@ -40,15 +42,17 @@ class RealAuthorizationTest extends TestCase
         return array(
             array('CouchDB\Http\StreamClient', new Auth\Cookie(self::LOGIN, self::PWD)),
             array('CouchDB\Http\StreamClient', new Auth\Basic(self::LOGIN, self::PWD)),
-/*            array('CouchDB\Http\SocketClient', new Auth\Cookie(self::LOGIN, self::PWD)),
-            array('CouchDB\Http\SocketClient', new Auth\Basic(self::LOGIN, self::PWD))*/
+
+            // TODO Socketclient do not work with authorization
+            // array('CouchDB\Http\SocketClient', new Auth\Cookie(self::LOGIN, self::PWD)),
+            // array('CouchDB\Http\SocketClient', new Auth\Basic(self::LOGIN, self::PWD))
         );
     }
 
     private function createServerAdmin()
     {
         $this->createTestConnection()->getClient()->request(
-            '/_config/admins/' . self::LOGIN,
+            '/_config/admins/'.self::LOGIN,
             Http\ClientInterface::METHOD_PUT,
             '"' . self::PWD . '"'
         );
@@ -57,9 +61,8 @@ class RealAuthorizationTest extends TestCase
     private function deleteServerAdmin()
     {
         $conn = $this->createTestConnection();
-        $conn->getClient()->connect(new Auth\Cookie(self::LOGIN, self::PWD));
-        $conn->getClient()->request('/_config/admins/' . self::LOGIN,
-            Http\ClientInterface::METHOD_DELETE);
-    }
 
+        $conn->getClient()->connect(new Auth\Cookie(self::LOGIN, self::PWD));
+        $conn->getClient()->request('/_config/admins/'.self::LOGIN, Http\ClientInterface::METHOD_DELETE);
+    }
 }

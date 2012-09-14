@@ -11,6 +11,11 @@ class Result implements ResultInterface
      */
     protected $data;
 
+    /**
+     * Constructor
+     *
+     * @param array $data
+     */
     public function __construct(array $data)
     {
         $this->data = $data;
@@ -49,7 +54,7 @@ class Result implements ResultInterface
     /**
      * Return the first row
      *
-     * @return false|array
+     * @return bool|array
      */
     public function getFirstRow()
     {
@@ -66,7 +71,7 @@ class Result implements ResultInterface
     /**
      * Return the last row
      *
-     * @return false|array
+     * @return bool|array
      */
     public function getLastRow()
     {
@@ -90,11 +95,17 @@ class Result implements ResultInterface
         return $this->data;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getIterator()
     {
         return new \ArrayIterator($this->data['rows']);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function count()
     {
         return count($this->data['rows']);

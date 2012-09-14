@@ -28,7 +28,7 @@ class LoggingClient implements ClientInterface
     }
 
     /**
-     * Connect to server
+     * {@inheritDoc}
      */
     public function connect(Auth\AuthInterface $auth = null)
     {
@@ -36,9 +36,7 @@ class LoggingClient implements ClientInterface
     }
 
     /**
-     * Check if the client is connected to the server
-     *
-     * @return boolean
+     * {@inheritDoc}
      */
     public function isConnected()
     {
@@ -46,14 +44,7 @@ class LoggingClient implements ClientInterface
     }
 
     /**
-     * Request
-     *
-     * @param string $path
-     * @param string $method
-     * @param string $data
-     * @param array  $headers
-     *
-     * @return \CouchDB\Http\Response\ResponseInterface
+     * {@inheritDoc}
      */
     public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
     {
@@ -81,7 +72,8 @@ class LoggingClient implements ClientInterface
 
     /**
      * Gets the total duration
-     * @return int
+     *
+     * @return integer
      */
     public function getTotalDuration()
     {

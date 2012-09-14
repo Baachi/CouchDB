@@ -1,14 +1,15 @@
 <?php
 namespace CouchDB\Auth;
 
-use CouchDB\Http;
+use CouchDB\Http\ClientInterface;
+use CouchDB\Http\Response\Response;
+use CouchDB\Tests\TestCase;
 
-class CookieTest extends \PHPUnit_Framework_TestCase
+class CookieTest extends TestCase
 {
-
     public function testIsAuthAdapter()
     {
-        $this->assertInstanceOf('\CouchDB\Auth\AuthInterface', self::auth());
+        $this->assertInstanceOf('CouchDB\Auth\AuthInterface', self::auth());
     }
 
     public function testDoesCookieAuthorization()
@@ -46,13 +47,17 @@ class CookieTest extends \PHPUnit_Framework_TestCase
     {
         $client = $this->getMock('CouchDB\Http\ClientInterface');
         $client
-                ->expects($this->any())
-                ->method('request')
-                ->will($this->returnValue(
-            new Http\Response\Response(200, '{"ok":true}', array(
-                'set-cookie' => ' AuthSession=eGlhZzo1MDRENENEMzqi0aDXLCTNmbz4Em7C7qS-XFW3rA; Version=1; Path=/; HttpOnly'
-            ))
-        ));
+            ->expects($this->any())
+            ->method('request')
+            ->will($this->returnValue(
+                new Http\Response\Response(
+                    200,
+                    '{"ok":true}',
+                    array(
+                        'set-cookie' => 'AuthSession=eGlhZzo1MDRENENEMzqi0aDXLCTNmbz4Em7C7qS-XFW3rA; Version=1; Path=/; HttpOnly'
+                    )
+                )
+            ));
 
         return $client;
     }

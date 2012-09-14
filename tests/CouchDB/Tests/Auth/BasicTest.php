@@ -1,20 +1,17 @@
 <?php
 namespace CouchDB\Auth;
 
-class BasicTest extends \PHPUnit_Framework_TestCase
-{
+use CouchDB\Tests\TestCase;
 
+class BasicTest extends TestCase
+{
     public function testHasBasicAuthHeader()
     {
         $this->assertEquals(
-            array(
-                'Authorization' => 'Basic dGVzdDoxMjM='
-            ),
+            array('Authorization' => 'Basic dGVzdDoxMjM='),
             self::auth()->getHeaders()
         );
     }
-
-//--------------------------------------------------------------------------------------------------
 
     private static function auth()
     {

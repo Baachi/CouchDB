@@ -1,6 +1,7 @@
 <?php
 namespace CouchDB\Auth;
-use CouchDB\Http;
+
+use CouchDB\Http\ClientInterface;
 
 /**
  * @author Maxim Gnatenko <mgnatenko@gmail.com>
@@ -29,22 +30,26 @@ class Basic implements AuthInterface
     }
 
     /**
-     * @param  Http\ClientInterface $client
-     * @return AuthInterface|Basic
+     * {@inheritDoc}
      */
-    public function authorize(Http\ClientInterface $client)
+    public function authorize(ClientInterface $client)
     {
         return $this;
     }
 
     /**
-     * @return array
+     * {@inheritDoc}
      */
     public function getHeaders()
     {
-        return $this->login ?
-            array('Authorization' => 'Basic ' . base64_encode($this->login . ':' . $this->password))
-            :
-            array();
+        if (!$this->login) {
+            return array();
+        }
+
+        $auth = base64_encode("{$this->login}:{$this->password}");
+
+        return array(
+            'Authorization' => 'Basic '.$auth
+        );
     }
 }

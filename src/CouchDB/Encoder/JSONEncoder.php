@@ -15,11 +15,7 @@ if (!defined('JSON_ERROR_UTF8')) {
 class JSONEncoder implements EncoderInterface
 {
     /**
-     * Encode a value into json
-     *
-     * @param  mixed               $value
-     * @throws JsonEncodeException
-     * @return string
+     * {@inheritDoc}
      */
     public static function encode($value)
     {
@@ -32,11 +28,7 @@ class JSONEncoder implements EncoderInterface
     }
 
     /**
-     * Decode a json string
-     *
-     * @param  string              $json
-     * @throws JsonDecodeException
-     * @return mixed
+     * {@inheritDoc}
      */
     public static function decode($json)
     {

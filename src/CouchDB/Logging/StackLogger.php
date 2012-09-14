@@ -7,9 +7,9 @@ namespace CouchDB\Logging;
 class StackLogger implements LoggingInterface
 {
     /**
-     * @var SplStack
+     * @var \SplStack
      */
-    protected $stack;
+    private $stack;
 
     public function __construct()
     {
@@ -19,7 +19,7 @@ class StackLogger implements LoggingInterface
     /**
      * Return the stack
      *
-     * @return SplStack
+     * @return \SplStack
      */
     public function getStack()
     {
