@@ -11,40 +11,40 @@ interface ResultInterface extends \IteratorAggregate, \Countable
      *
      * @return array
      */
-    function getRows();
+    public function getRows();
 
     /**
      * Return the first row
      *
      * @return false|array
      */
-    function getFirstRow();
+    public function getFirstRow();
 
     /**
      * Return the last row
      *
      * @return false|array
      */
-    function getLastRow();
+    public function getLastRow();
 
     /**
      * Return the total amount of rows
      *
      * @return integer
      */
-    function getTotalRows();
+    public function getTotalRows();
 
     /**
      * Gets the offset
      *
      * @return integer
      */
-    function getOffset();
+    public function getOffset();
 
     /**
      * Return the array
      *
      * @return array
      */
-    function toArray();
+    public function toArray();
 }

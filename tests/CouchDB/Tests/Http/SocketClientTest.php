@@ -61,7 +61,8 @@ class SocketClientTest extends TestCase
         $this->assertInternalType('string', $response->getContent());
     }
 
-    public function testCanUseSameConnectionForMultipleRequests() {
+    public function testCanUseSameConnectionForMultipleRequests()
+    {
         $this->markTestIncomplete('It doesnt work by some reason');
 
         $client = self::client();
@@ -82,6 +83,7 @@ class SocketClientTest extends TestCase
         $h = fopen('php://memory', 'rw');
         fwrite($h, self::coachDbFakeResponse());
         rewind($h);
+
         return $h;
     }
 

@@ -11,5 +11,5 @@ interface LoggingInterface
      *
      * @param array $message
      */
-    function log(array $message);
+    public function log(array $message);
 }

@@ -59,6 +59,7 @@ class Result implements ResultInterface
         }
 
         $row = array_slice($rows, 0, 1);
+
         return current($row);
     }
 
@@ -75,6 +76,7 @@ class Result implements ResultInterface
         }
 
         $row = array_slice($rows, count($rows) - 1);
+
         return current($row);
     }
 

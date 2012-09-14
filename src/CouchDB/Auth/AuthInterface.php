@@ -9,7 +9,7 @@ interface AuthInterface
 {
 
     /**
-     * @param ClientInterface $client
+     * @param  ClientInterface $client
      * @return AuthInterface
      */
     public function authorize(ClientInterface $client);

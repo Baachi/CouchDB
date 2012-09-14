@@ -2,9 +2,7 @@
 namespace CouchDB;
 
 use CouchDB\Http\ClientInterface;
-use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -72,8 +70,8 @@ class Database
     /**
      * Find all documents from the database
      *
-     * @param null $limit
-     * @param null $startKey
+     * @param  null  $limit
+     * @param  null  $startKey
      * @return mixed
      */
     public function findAll($limit = null, $startKey = null)
@@ -98,7 +96,7 @@ class Database
     /**
      * Find a documents by a id
      *
-     * @param array $ids
+     * @param array        $ids
      * @param null|integer $limit
      * @param null|integer $offset
      *
@@ -127,13 +125,14 @@ class Database
         );
 
         $value = JSONEncoder::decode($response->getContent());
+
         return $value;
     }
 
     /**
      * Insert a new document.
      *
-     * @param array $doc
+     * @param  array             $doc
      * @throws \RuntimeException
      */
     public function insert(array & $doc)
@@ -178,8 +177,8 @@ class Database
     /**
      * Updates a document
      *
-     * @param string $id  The id from the document
-     * @param array $doc  A reference from the document
+     * @param  string            $id  The id from the document
+     * @param  array             $doc A reference from the document
      * @return bool
      * @throws \RuntimeException
      */
@@ -251,6 +250,7 @@ class Database
         $this->conn->initialize();
         $json = $this->conn->getClient()->request("/{$this->name}/")->getContent();
         $info = JSONEncoder::decode($json);
+
         return $info;
     }
 

@@ -50,12 +50,14 @@ class ResponseTest extends TestCase
     /**
      * @dataProvider successfulHttpCodesProvider
      */
-    public function testSuccessfulCodes($code) {
+    public function testSuccessfulCodes($code)
+    {
         $response = new Response($code, '', array());
         $this->assertTrue($response->isSuccessful());
     }
 
-    public static function successfulHttpCodesProvider() {
+    public static function successfulHttpCodesProvider()
+    {
         return array(
             array(200),
             array(201),

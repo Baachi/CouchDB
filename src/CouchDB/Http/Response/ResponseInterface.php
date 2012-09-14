@@ -11,38 +11,38 @@ interface ResponseInterface
      *
      * @return integer
      */
-    function getStatusCode();
+    public function getStatusCode();
 
     /**
      * Return the content
      *
      * @return string
      */
-    function getContent();
+    public function getContent();
 
     /**
      * Return a header
      *
      * @param string $name
      */
-    function getHeader($name);
+    public function getHeader($name);
 
     /**
      * Return all headers
      */
-    function getHeaders();
+    public function getHeaders();
 
     /**
      * Check if the response are successful.
      *
      * @return boolean
      */
-    function isSuccessful();
+    public function isSuccessful();
 
     /**
      * Return the content
      *
      * @return string
      */
-    function __toString();
+    public function __toString();
 }

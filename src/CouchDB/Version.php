@@ -11,7 +11,7 @@ final class Version
     /**
      * Compare a given version with the current version
      *
-     * @param string $version
+     * @param  string  $version
      * @return integer
      */
     public static function compare($version)

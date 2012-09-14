@@ -17,27 +17,27 @@ interface ClientInterface
 
     /**
      * Connect to server
-     * @param Auth\AuthInterface $auth
+     * @param  Auth\AuthInterface $auth
      * @return ClientInterface
      */
-    function connect(Auth\AuthInterface $auth = null);
+    public function connect(Auth\AuthInterface $auth = null);
 
     /**
      * Check if the client is connected to the server
      *
      * @return boolean
      */
-    function isConnected();
+    public function isConnected();
 
     /**
      * Request
      *
-     * @param string $path
+     * @param string   $path
      * @param constant $method
-     * @param string $data
-     * @param array $headers
+     * @param string   $data
+     * @param array    $headers
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */
-    function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array());
+    public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array());
 }

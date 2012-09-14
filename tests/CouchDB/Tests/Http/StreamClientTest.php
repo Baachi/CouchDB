@@ -1,7 +1,6 @@
 <?php
 namespace CouchDB\Tests\Http;
 
-use CouchDB\Tests\TestCase;
 use CouchDB\Http;
 
 /**

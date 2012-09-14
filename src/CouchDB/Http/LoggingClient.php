@@ -18,7 +18,7 @@ class LoggingClient implements ClientInterface
     /**
      * @var integer
      */
-    protected  $totalDuration;
+    protected $totalDuration;
 
     public function __construct(ClientInterface $client)
     {
@@ -51,7 +51,7 @@ class LoggingClient implements ClientInterface
      * @param string $path
      * @param string $method
      * @param string $data
-     * @param array $headers
+     * @param array  $headers
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */

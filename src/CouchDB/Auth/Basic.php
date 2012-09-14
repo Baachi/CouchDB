@@ -29,7 +29,7 @@ class Basic implements AuthInterface
     }
 
     /**
-     * @param Http\ClientInterface $client
+     * @param  Http\ClientInterface $client
      * @return AuthInterface|Basic
      */
     public function authorize(Http\ClientInterface $client)

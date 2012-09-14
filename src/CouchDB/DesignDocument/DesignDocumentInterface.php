@@ -6,5 +6,5 @@ namespace CouchDB\DesignDocument;
  */
 interface DesignDocumentInterface
 {
-    function fetch();
+    public function fetch();
 }

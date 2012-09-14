@@ -120,13 +120,14 @@ class Connection
         $this->initialize();
         $json      = $this->client->request('/_all_dbs')->getContent();
         $databases = JSONEncoder::decode($json);
+
         return $databases;
     }
 
     /**
      * Drop a database
      *
-     * @param string $name
+     * @param  string $name
      * @return bool
      */
     public function dropDatabase($name)
@@ -157,7 +158,7 @@ class Connection
     /**
      * Select a database
      *
-     * @param string $name
+     * @param  string   $name
      * @return Database
      */
     public function selectDatabase($name)
@@ -172,13 +173,14 @@ class Connection
         }
 
         $db = $this->wrapDatabase($name);
+
         return $db;
     }
 
     /**
      * Check if the database exist
      *
-     * @param string $name The database name
+     * @param  string $name The database name
      * @return bool
      */
     public function hasDatabase($name)
@@ -189,13 +191,14 @@ class Connection
         if (404 === $response->getStatusCode()) {
             return false;
         }
+
         return true;
     }
 
     /**
      * Create a new database
      *
-     * @param string $name
+     * @param  string            $name
      * @return Database
      * @throws \RuntimeException If the database could not be created
      */
@@ -238,7 +241,7 @@ class Connection
     /**
      * Gets the database
      *
-     * @param string $name
+     * @param  string   $name
      * @return Database
      */
     public function __get($name)
@@ -249,7 +252,7 @@ class Connection
     /**
      * Drop a database
      *
-     * @param string $name
+     * @param  string $name
      * @return bool
      */
     public function __unset($name)
@@ -260,7 +263,7 @@ class Connection
     /**
      * Check if the database exist
      *
-     * @param string $name
+     * @param  string $name
      * @return bool
      */
     public function __isset($name)
@@ -271,7 +274,7 @@ class Connection
     /**
      * Wraps the database to a object
      *
-     * @param string $name
+     * @param  string   $name
      * @return Database
      */
     protected function wrapDatabase($name)

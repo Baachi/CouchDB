@@ -17,32 +17,34 @@ class JSONEncoder implements EncoderInterface
     /**
      * Encode a value into json
      *
-     * @param mixed $value
+     * @param  mixed               $value
      * @throws JsonEncodeException
      * @return string
      */
-    static public function encode($value)
+    public static function encode($value)
     {
         $json = @json_encode($value);
         if ("null" === $json && $value !== null) {
             throw new JsonEncodeException($value);
         }
+
         return $json;
     }
 
     /**
      * Decode a json string
      *
-     * @param string $json
+     * @param  string              $json
      * @throws JsonDecodeException
      * @return mixed
      */
-    static public function decode($json)
+    public static function decode($json)
     {
         $value = json_decode($json, true);
         if (!$value) {
             throw new JsonDecodeException($json);
         }
+
         return $value;
     }
 

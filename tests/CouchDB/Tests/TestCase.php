@@ -4,7 +4,6 @@ namespace CouchDB\Tests;
 use CouchDB\Connection;
 use CouchDB\Http\StreamClient;
 use CouchDB\Http\LoggingClient;
-use CouchDB\Logging\StackLogger;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -15,6 +14,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $client = new LoggingClient(new StreamClient());
         $conn   = new Connection($client);
+
         return $conn;
     }
 

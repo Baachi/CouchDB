@@ -34,7 +34,7 @@ class Cookie implements AuthInterface
     }
 
     /**
-     * @param Http\ClientInterface $client
+     * @param  Http\ClientInterface $client
      * @return AuthInterface|Cookie
      */
     public function authorize(Http\ClientInterface $client)
@@ -67,7 +67,6 @@ class Cookie implements AuthInterface
             && ($response->getStatusCode() == 200)
             && $response->getHeader('set-cookie')
             && preg_match('/AuthSession=([^;]+);/i', $response->getHeader('set-cookie'), $regs)) {
-
             return $regs[1];
         }
 

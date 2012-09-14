@@ -27,12 +27,14 @@ class BatchUpdater
     public function update($doc)
     {
         $this->data['docs'][] = $doc;
+
         return $this;
     }
 
     public function delete($id, $rev)
     {
         $this->data['docs'][] = array('_id' => $id, '_rev' => $rev, '_deleted' => true);
+
         return $this;
     }
 

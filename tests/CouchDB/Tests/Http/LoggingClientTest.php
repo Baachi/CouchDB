@@ -28,6 +28,7 @@ class LoggingClientTest extends TestCase
             ->method('request')
             ->will($this->returnCallback(function() {
                 usleep(1);
+
                 return new Response(200, 'test', array());
             }
         ));

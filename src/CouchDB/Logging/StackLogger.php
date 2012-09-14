@@ -36,5 +36,4 @@ class StackLogger implements LoggingInterface
         $this->stack->push($message);
     }
 
-
 }

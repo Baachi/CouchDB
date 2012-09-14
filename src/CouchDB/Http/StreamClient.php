@@ -52,10 +52,10 @@ class StreamClient extends AbstractClient
     /**
      * Request
      *
-     * @param string $path
+     * @param string   $path
      * @param constant $method
-     * @param string $data
-     * @param array $headers
+     * @param string   $data
+     * @param array    $headers
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */

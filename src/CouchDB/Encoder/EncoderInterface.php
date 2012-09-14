@@ -9,18 +9,18 @@ interface EncoderInterface
     /**
      * Encode a value into json
      *
-     * @param mixed $value
+     * @param  mixed               $value
      * @throws JsonEncodeException
      * @return string
      */
-    static function encode($value);
+    public static function encode($value);
 
     /**
      * Decode a json string
      *
-     * @param string $json
+     * @param  string              $json
      * @throws JsonDecodeException
      * @return mixed
      */
-    static function decode($json);
+    public static function decode($json);
 }

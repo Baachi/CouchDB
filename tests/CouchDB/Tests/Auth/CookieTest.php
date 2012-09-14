@@ -53,6 +53,7 @@ class CookieTest extends \PHPUnit_Framework_TestCase
                 'set-cookie' => ' AuthSession=eGlhZzo1MDRENENEMzqi0aDXLCTNmbz4Em7C7qS-XFW3rA; Version=1; Path=/; HttpOnly'
             ))
         ));
+
         return $client;
     }
 

@@ -24,7 +24,7 @@ class Response implements ResponseInterface
     public function __construct($status, $content, array $headers)
     {
         $this->statusCode = (integer) $status;
-        $this->content    = (string)  $content;
+        $this->content    = (string) $content;
         $this->headers    = $headers;
     }
 

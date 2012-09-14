@@ -5,7 +5,6 @@ use CouchDB\Tests\TestCase;
 use CouchDB\Http;
 use CouchDB\Auth;
 
-
 class RealAuthorizationTest extends TestCase
 {
     const LOGIN = 'test';

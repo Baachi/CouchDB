@@ -62,10 +62,10 @@ class SocketClient extends AbstractClient
     /**
      * Request
      *
-     * @param string $path
+     * @param string   $path
      * @param constant $method
-     * @param string $data
-     * @param array $headers
+     * @param string   $data
+     * @param array    $headers
      *
      * @return \CouchDB\Http\Response\ResponseInterface
      */
@@ -110,7 +110,7 @@ class SocketClient extends AbstractClient
      * Builds a HTTP request header
      * @param string $path
      * @param string $method
-     * @param array $headers
+     * @param array  $headers
      * @param string $data
      *
      * @return string
@@ -157,8 +157,7 @@ class SocketClient extends AbstractClient
         do {
             $content .= $line = fgets($resource, $bytesToRead);
             $bytesToRead -= strlen($line);
-        }
-        while (($bytesToRead > 0) && ($line !== false));
+        } while (($bytesToRead > 0) && ($line !== false));
 
         return $content;
     }
@@ -172,6 +171,7 @@ class SocketClient extends AbstractClient
                 $headers[strtolower($key)] = trim($value);
             }
         }
+
         return $headers;
     }
 

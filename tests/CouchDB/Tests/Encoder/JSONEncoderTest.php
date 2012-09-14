@@ -46,7 +46,7 @@ class JSONEncoderTest extends TestCase
         JSONEncoder::encode("\xB1\x31");
     }
 
-    static public function getEncodeData()
+    public static function getEncodeData()
     {
         return array(
             array('foo', '"foo"'),
@@ -56,7 +56,7 @@ class JSONEncoderTest extends TestCase
             array(array('foo' => 'bar'), '{"foo":"bar"}'),
         );
     }
-    static public function getDecodeData()
+    public static function getDecodeData()
     {
         return array(
             array('"foo"', 'foo'),
