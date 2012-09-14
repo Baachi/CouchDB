@@ -90,6 +90,7 @@ class DatabaseTest extends TestCase
         $doc2 = $this->db->find($doc['_id']);
         $this->assertEquals($doc['foo'], $doc2['foo']);
         $this->assertEquals($doc['_id'], $doc2['_id']);
+        $this->assertEquals($doc['_rev'], $doc2['_rev']);
     }
 
     public function testDelete()

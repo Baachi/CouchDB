@@ -205,7 +205,7 @@ class Database
         $rev = $value['rev'];
 
         $doc['_id'] = $id;
-        $doc['_rev'] = $id;
+        $doc['_rev'] = $rev;
 
         return true;
     }
