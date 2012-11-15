@@ -96,5 +96,5 @@ It is green?
  * Markus Bachmann <markus.bachmann@bachi.biz>
  * [All contributors] (https://github.com/Baachi/Alien/contributors)
 
-## Licence ##
+## License ##
 CouchDB Client is released under the MIT License. See the bundled LICENSE file for details.
