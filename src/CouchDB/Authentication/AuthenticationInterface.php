@@ -1,16 +1,19 @@
 <?php
-namespace CouchDB\Auth;
+
+namespace CouchDB\Authentication;
+
 use CouchDB\Http\ClientInterface;
 
 /**
  * @author Maxim Gnatenko <mgnatenko@gmail.com>
  */
-interface AuthInterface
+interface AuthenticationInterface
 {
 
     /**
      * @param  ClientInterface $client
-     * @return AuthInterface
+     *
+     * @return AuthenticationInterface
      */
     public function authorize(ClientInterface $client);
 

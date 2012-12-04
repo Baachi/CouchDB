@@ -1,7 +1,7 @@
 <?php
 namespace CouchDB\Http;
 
-use CouchDB\Auth;
+use CouchDB\Authentication\AuthenticationInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -39,7 +39,7 @@ class SocketClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function connect(Auth\AuthInterface $auth = null)
+    public function connect(AuthenticationInterface $auth = null)
     {
         $this->resource = fsockopen($this->getOption('host'), $this->getOption('port'), $errno, $errstr, $this->getOption('timeout'));
         if (!$this->resource) {

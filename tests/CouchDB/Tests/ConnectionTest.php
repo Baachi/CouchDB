@@ -153,7 +153,7 @@ class ConnectionTest extends TestCase
 
     public function testUtilizesAuthAdapter()
     {
-        $authAdapter = $this->getMock('CouchDB\Auth\AuthInterface');
+        $authAdapter = $this->getMock('CouchDB\Authentication\AuthenticationInterface');
         $authAdapter->expects($this->once())->method('authorize');
 
         $conn = new Connection(new Http\StreamClient(), null, $authAdapter);

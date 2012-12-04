@@ -1,11 +1,11 @@
 <?php
 namespace CouchDB;
 
-use CouchDB\Auth;
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
 use Doctrine\Common\EventManager;
+use CouchDB\Authentication\AuthenticationInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -13,7 +13,7 @@ use Doctrine\Common\EventManager;
 class Connection
 {
     /**
-     * @var Auth\AuthInterface
+     * @var AuthenticationInterface
      */
     private $authAdapter;
 
@@ -30,11 +30,11 @@ class Connection
     /**
      * Constructor
      *
-     * @param Http\ClientInterface $client
-     * @param \Doctrine\Common\EventManager $dispatcher
-     * @param Auth\AuthInterface $authAdapter
+     * @param ClientInterface         $client
+     * @param EventManager            $dispatcher
+     * @param AuthenticationInterface $authAdapter
      */
-    public function __construct(ClientInterface $client, EventManager $dispatcher = null, Auth\AuthInterface $authAdapter = null)
+    public function __construct(ClientInterface $client, EventManager $dispatcher = null, AuthenticationInterface $authAdapter = null)
     {
         $this->client = $client;
         $this->eventManager = $dispatcher ?: new EventManager();

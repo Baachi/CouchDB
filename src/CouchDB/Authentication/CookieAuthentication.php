@@ -1,5 +1,6 @@
 <?php
-namespace CouchDB\Auth;
+
+namespace CouchDB\Authentication;
 
 use CouchDB\Http\ClientInterface;
 use CouchDB\Http\Response\ResponseInterface;
@@ -7,7 +8,7 @@ use CouchDB\Http\Response\ResponseInterface;
 /**
  * @author Maxim Gnatenko <mgnatenko@gmail.com>
  */
-class Cookie implements AuthInterface
+class CookieAuthentication implements AuthenticationInterface
 {
     /**
      * @var string

@@ -1,9 +1,11 @@
 <?php
-namespace CouchDB\Auth;
+
+namespace CouchDB\Tests\Authentication;
 
 use CouchDB\Tests\TestCase;
+use CouchDB\Authentication\BasicAuthentication;
 
-class BasicTest extends TestCase
+class BasicAuthenticationTest extends TestCase
 {
     public function testHasBasicAuthHeader()
     {
@@ -15,6 +17,6 @@ class BasicTest extends TestCase
 
     private static function auth()
     {
-        return new Basic('test', '123');
+        return new BasicAuthentication('test', '123');
     }
 }

@@ -1,19 +1,16 @@
 <?php
-namespace CouchDB\Auth;
+namespace CouchDB\Tests\Authentication;
 
+use CouchDB\Tests\TestCase;
+use CouchDB\Authentication\CookieAuthentication;
 use CouchDB\Http\ClientInterface;
 use CouchDB\Http\Response\Response;
-use CouchDB\Tests\TestCase;
 
-class CookieTest extends TestCase
+class CookieAuthenticationTest extends TestCase
 {
-    public function testIsAuthAdapter()
-    {
-        $this->assertInstanceOf('CouchDB\Auth\AuthInterface', self::auth());
-    }
-
     public function testDoesCookieAuthorization()
     {
+        $adapter = new CookieAuthentication('johndoe', 'secret');
         $client = $this->getMock('CouchDB\Http\ClientInterface');
 
         $client->expects($this->once())
@@ -21,16 +18,17 @@ class CookieTest extends TestCase
                 ->with(
                     '/_session',
                     ClientInterface::METHOD_POST,
-                    'name=login&password=pwd',
+                    'name=johndoe&password=secret',
                     array('Content-Type' => 'application/x-www-form-urlencoded')
                 );
 
-        self::auth()->authorize($client);
+        $this->assertEquals($adapter, $adapter->authorize($client));
     }
 
     public function testStoresAuthorizationCookie()
     {
-        $auth = self::auth();
+        $auth = new CookieAuthentication('login', 'secret');
+
         $auth->authorize($this->successfullyAuthorizedClient());
         $this->assertEquals(
             array('Cookie' => 'AuthSession=eGlhZzo1MDRENENEMzqi0aDXLCTNmbz4Em7C7qS-XFW3rA'),
@@ -38,14 +36,11 @@ class CookieTest extends TestCase
         );
     }
 
-    private static function auth()
-    {
-        return new Cookie('login', 'pwd');
-    }
-
     private function successfullyAuthorizedClient()
     {
+        $adapter = new CookieAuthentication('johndoe', 'secret');
         $client = $this->getMock('CouchDB\Http\ClientInterface');
+
         $client
             ->expects($this->any())
             ->method('request')

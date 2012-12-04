@@ -1,14 +1,14 @@
 <?php
-namespace CouchDB\Auth;
+
+namespace CouchDB\Authentication;
 
 use CouchDB\Http\ClientInterface;
 
 /**
  * @author Maxim Gnatenko <mgnatenko@gmail.com>
  */
-class Basic implements AuthInterface
+class BasicAuthentication implements AuthenticationInterface
 {
-
     /**
      * @var string
      */

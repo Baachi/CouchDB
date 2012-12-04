@@ -1,7 +1,7 @@
 <?php
 namespace CouchDB\Http;
 
-use CouchDB\Auth;
+use CouchDB\Authentication\AuthenticationInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -31,7 +31,7 @@ class StreamClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function connect(Auth\AuthInterface $auth = null)
+    public function connect(AuthenticationInterface $auth = null)
     {
         $this->connected = true;
 
