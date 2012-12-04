@@ -20,7 +20,7 @@ class CookieTest extends TestCase
                 ->method('request')
                 ->with(
                     '/_session',
-                    Http\ClientInterface::METHOD_POST,
+                    ClientInterface::METHOD_POST,
                     'name=login&password=pwd',
                     array('Content-Type' => 'application/x-www-form-urlencoded')
                 );
@@ -50,7 +50,7 @@ class CookieTest extends TestCase
             ->expects($this->any())
             ->method('request')
             ->will($this->returnValue(
-                new Http\Response\Response(
+                new Response(
                     200,
                     '{"ok":true}',
                     array(
