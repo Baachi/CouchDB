@@ -1,7 +1,6 @@
 <?php
-namespace CouchDB\Http;
 
-use CouchDB\Authentication\AuthenticationInterface;
+namespace CouchDB\Http;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -20,8 +19,8 @@ class SocketClient extends AbstractClient
         }
 
         parent::__construct(array(
-            'host' => $host,
-            'port' => $port,
+            'host'    => $host,
+            'port'    => $port,
             'timeout' => $timeout,
         ));
     }
@@ -39,17 +38,13 @@ class SocketClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function connect(AuthenticationInterface $auth = null)
+    public function connect()
     {
         $this->resource = fsockopen($this->getOption('host'), $this->getOption('port'), $errno, $errstr, $this->getOption('timeout'));
+
         if (!$this->resource) {
             $this->resource = null;
             throw new \RuntimeException(sprintf('Unable to connect to %s (%s)', $this->getOption('host'), $errstr));
-        }
-
-        if ($auth) {
-            $this->authAdapter = $auth;
-            $this->authAdapter->authorize($this);
         }
 
         return $this;
@@ -66,77 +61,75 @@ class SocketClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
+    protected function doRequest(Request $request)
     {
-        if ($this->authAdapter) {
-            $headers = array_merge($headers, $this->authAdapter->getHeaders());
-        }
-
-        $request = $this->buildRequest($path, strtoupper($method), $headers, $data);
+        $request = $this->buildRequest($request);
 
         if (!$this->isConnected()) {
-            throw new \LogicException('Not connected to the server');
+            $this->connect();
         }
 
         if (!fwrite($this->resource, $request)) {
             throw new \RuntimeException('Could not send request');
         }
 
-        $rawHeader = '';
+        $rawHeader = array();
         while (strlen($line = trim(fgets($this->resource, 4096)))) {
-            $rawHeader .= $line . "\n";
+            $rawHeader[] = $line;
         }
 
-        if (!strlen($rawHeader)) {
+        if (empty($rawHeader)) {
             throw new \RuntimeException('Could not get response');
         }
 
-        return new Response\Response(
-            self::readHttpCode($rawHeader),
-            self::readContent($this->resource, $rawHeader),
-            self::readHeaders($rawHeader)
-        );
-    }
+        $headers = $this->readHeaders($rawHeader);
 
-    public function setTestConnection($resource)
-    {
-        $this->resource = $resource;
+        $response = new Response\Response(
+            $this->readHttpCode($rawHeader),
+            $this->readContent($this->resource, $headers),
+            $headers
+        );
+
+        if (!isset($headers['connection']) || 'keep-alive' !== $headers['connection']) {
+            fclose($this->resource);
+            $this->resource = null;
+        }
+
+        return $response;
     }
 
     /**
      * Builds a HTTP request header
      *
-     * @param string $path
-     * @param string $method
-     * @param array  $headers
-     * @param string $data
+     * @param Request $request
      *
      * @return string
      */
-    private function buildRequest($path, $method, array $headers, $data)
+    private function buildRequest(Request $request)
     {
-        $string = "{$method} {$path} HTTP/1.1\n";
+        $string = "{$request->getMethod()} {$request->getPath()} HTTP/1.1\r\n";
 
-        $headers = array_merge(array(
-            'Host' => $this->getOption('host')
-        ), $headers);
-
-        if ('' !== $data && null !== $data) {
-            $headers['Content-Length'] = strlen($data);
-        }
+        $request->addHeader('Host', $this->getOption('Host'));
 
         if (true === $this->getOption('keep-alive')) {
-            $headers['connection'] = 'keep-alive';
+            $request->addHeader('Connection', 'Keep-Alive');
         } else {
-            $headers['connection'] = 'close';
+            $request->addHeader('Connection', 'Close');
         }
 
-        foreach ($headers as $var => $value) {
-            $string .= "{$var}: {$value}\n";
+        if ($this->getOption('username')) {
+            $request->addHeader('Authorization', sprintf(
+                'Basic %s', 
+                base64_encode($this->getOption('username').':'.$this->getOption('password'))
+            ));
         }
 
-        if ('' !== $data && null !== $data) {
-            $string .= "\n{$data}";
+        foreach ($request->getHeaders() as $var => $value) {
+            $string .= "{$var}: {$value}\r\n";
+        }
+
+        if ($request->getData()) {
+            $string .= "\r\n{$request->getData()}";
         }
 
         return $string . "\n\n";
@@ -145,28 +138,36 @@ class SocketClient extends AbstractClient
     /**
      * Extract the HTTP status code
      *
-     * @param string $rawHeader
+     * @param array $rawHeader
      *
-     * @return integer|null
+     * @return integer
      */
-    private static function readHttpCode($rawHeader)
+    private function readHttpCode(array $rawHeader)
     {
-        return preg_match('@^HTTP/[\d\.]+ (\d+)@i', $rawHeader, $regs) ? (integer) $regs[1] : null;
+        list($line, ) = $rawHeader;
+        preg_match('#^HTTP/1\.1\s+(\d+)\s+.*$#', $line, $matches);
+        return (integer) $matches[1];
     }
 
     /**
      * Extract the response body
      *
-     * @param resoource $resource
-     * @param string    $rawHeader
+     * @param resource $resource
+     * @param array    $headers
      *
      * @return string
      */
-    private static function readContent($resource, $rawHeader)
+    private function readContent($resource, array $headers)
     {
-        $bytesToRead = preg_match('@content\-length: (\d+)@i', $rawHeader, $regs) ? $regs[1] : 0;
+        $bytesToRead = 0;
+        foreach ($headers as $key => $value) {
+            if ('content-length' === $key) {
+                $bytesToRead = (integer) $value;
+            }
+        }
 
         $content = '';
+
         do {
             $content .= $line = fgets($resource, $bytesToRead);
             $bytesToRead -= strlen($line);
@@ -178,14 +179,14 @@ class SocketClient extends AbstractClient
     /**
      * Extract all HTTP headers
      *
-     * @param string $rawHeader
+     * @param array $rawHeader
      *
      * @return array
      */
-    private static function readHeaders($rawHeader)
+    private static function readHeaders(array $rawHeader)
     {
         $headers = array();
-        foreach (explode("\n", $rawHeader) as $line) {
+        foreach ($rawHeader as $line) {
             if (strpos($line, ':') !== false) {
                 list($key, $value) = explode(':', $line, 2);
                 $headers[strtolower($key)] = trim($value);

@@ -62,15 +62,15 @@ class Database
     public function find($id)
     {
         $this->conn->initialize();
+
         $response = $this->conn->getClient()->request("/{$this->name}/{$id}");
         $json     = $response->getContent();
-        $doc      = JSONEncoder::decode($json);
 
         if (404 === $response->getStatusCode()) {
             throw new \RuntimeException('Document does not exist');
         }
 
-        return $doc;
+        return JSONEncoder::decode($json);
     }
 
     /**
@@ -141,38 +141,34 @@ class Database
      * @param  array             $doc
      * @throws \RuntimeException
      */
-    public function insert(array & $doc)
+    public function insert(array &$doc)
     {
         $this->conn->initialize();
-        $json = JSONEncoder::encode($doc);
 
         if (isset($doc['_id'])) {
+            $clone = $doc;
+            unset($clone['_id']);
+
             $response = $this->conn->getClient()->request(
-                "{$this->name}/{$doc['_id']}",
+                "/{$this->name}/{$doc['_id']}",
                 ClientInterface::METHOD_PUT,
-                $json,
+                JSONEncoder::encode($clone),
                 array('Content-Type' => 'application/json')
             );
         } else {
             $response = $this->conn->getClient()->request(
-                "{$this->name}/",
+                "/{$this->name}/",
                 ClientInterface::METHOD_POST,
-                $json,
+                JSONEncoder::encode($doc),
                 array('Content-Type' => 'application/json')
             );
         }
 
         if (201 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf(
-                'Unable to save %s: Response (%d): %s',
-                var_export($doc, true),
-                $response->getStatusCode(),
-                $response
-            ));
+            throw new \RuntimeException('Unable to save document');
         }
 
         $value  = JSONEncoder::decode($response->getContent());
-        $status = $value['ok'];
         $id     = $value['id'];
         $rev    = $value['rev'];
 
@@ -188,14 +184,14 @@ class Database
      * @return bool
      * @throws \RuntimeException
      */
-    public function update($id, array & $doc)
+    public function update($id, array &$doc)
     {
         $this->conn->initialize();
 
         $json = JSONEncoder::encode($doc);
 
         $response = $this->getConnection()->getClient()->request(
-            "{$this->name}/{$id}",
+            "/{$this->name}/{$id}",
             ClientInterface::METHOD_PUT,
             $json,
             array('Content-Type' => 'application/json')
@@ -206,11 +202,9 @@ class Database
         }
 
         $value = JSONEncoder::decode($response->getContent());
-        $id = $value['id'];
-        $rev = $value['rev'];
 
-        $doc['_id'] = $id;
-        $doc['_rev'] = $rev;
+        $doc['_id'] = $value['id'];
+        $doc['_rev'] = $value['rev'];
 
         return true;
     }

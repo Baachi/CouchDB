@@ -1,7 +1,6 @@
 <?php
-namespace CouchDB\Http;
 
-use CouchDB\Authentication\AuthenticationInterface;
+namespace CouchDB\Http;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -31,14 +30,9 @@ class StreamClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function connect(AuthenticationInterface $auth = null)
+    public function connect()
     {
         $this->connected = true;
-
-        if ($auth) {
-            $this->authAdapter = $auth;
-            $this->authAdapter->authorize($this);
-        }
 
         return $this;
     }
@@ -54,25 +48,28 @@ class StreamClient extends AbstractClient
     /**
      * {@inheritDoc}
      */
-    public function request($path, $method = ClientInterface::METHOD_GET, $data = '', array $headers = array())
+    protected function doRequest(Request $request)
     {
-        if ($this->authAdapter) {
-            $headers = array_merge($headers, $this->authAdapter->getHeaders());
+        if ($this->getOption('username')) {
+            $request->addHeader('Authorization', sprintf(
+                'Basic %s', 
+                base64_encode($this->getOption('username').':'.$this->getOption('password'))
+            ));
         }
 
         $header = '';
-        foreach ($headers as $key => $value) {
+        foreach ($request->getHeaders() as $key => $value) {
             $header .= sprintf("%s: %s\n", $key, $value);
-        }
+        }        
 
         $resource = @fopen(
-            sprintf('http://%s:%d/%s', $this->getOption('host'), $this->getOption('port'), ltrim($path, '/')),
+            sprintf('http://%s:%d/%s', $this->getOption('host'), $this->getOption('port'), ltrim($request->getPath(), '/')),
             'r',
             false,
             stream_context_create(array(
                 'http' => array(
-                    'method' => $method,
-                    'content' => $data,
+                    'method' => $request->getMethod(),
+                    'content' => $request->getData(),
                     'ignore_errors' => true,
                     'max_redirects' => 0,
                     'user_agent'    => 'CouchDB Abstraction Layer',

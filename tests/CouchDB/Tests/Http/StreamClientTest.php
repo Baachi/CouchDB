@@ -1,35 +1,30 @@
 <?php
 namespace CouchDB\Tests\Http;
 
-use CouchDB\Http;
+use CouchDB\Http\StreamClient;
 
 /**
  * @author Maxim Gnatenko <mgnatenko@gmail.com>
  */
 class StreamClientTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testIsNotConnectedInitially()
     {
-        $this->assertFalse(self::client()->isConnected());
+        $client = new StreamClient();
+        $this->assertFalse($client->isConnected());
     }
 
     public function testConnect()
     {
-        $this->assertTrue(self::client()->connect()->isConnected());
+        $client = new StreamClient();
+        $this->assertEquals($client, $client->connect());
     }
 
     public function testGetRequestWorks()
     {
-        $this->assertEquals(
-            200,
-            self::client()->connect()->request('/')->getStatusCode()
-        );
-    }
+        $client = new StreamClient('localhost', '80');
+        $response = $client->request('/');
 
-    private static function client()
-    {
-        return new Http\StreamClient();
+        $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
     }
-
 }

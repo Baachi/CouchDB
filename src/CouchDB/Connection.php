@@ -6,6 +6,8 @@ use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
 use Doctrine\Common\EventManager;
 use CouchDB\Authentication\AuthenticationInterface;
+use CouchDB\Authentication\CookieAuthentication;
+use CouchDB\Authentication\HttpBasicAuthentication;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -18,14 +20,64 @@ class Connection
     private $authAdapter;
 
     /**
-     * @var \CouchDB\Http\ClientInterface
+     * @var ClientInterface
      */
     private $client;
 
     /**
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventManager;
+
+    /**
+     * Create a connection instance.
+     * 
+     * Available options:
+     *   - port: The couchdb port
+     *   - host: the couchdb host
+     *   - username: The username
+     *   - password: The password
+     *
+     * @param array $options Some options
+     *
+     * @return Connection
+     */
+    public static function create(array $options = array())
+    {
+        $options = array_merge(array(
+            'port'           => 5984,
+            'host'           => 'localhost',
+            'client'         => 'socket',
+            'authentication' => null,
+            'username'       => null,
+            'password'       => null,
+        ), $options);
+
+        $authAdapter = null;
+        $evm = new EventManager();
+
+        switch ($options['client']) {
+            case 'stream':
+                $client = new Http\StreamClient($options['host'], $options['port']);
+                break;
+            case 'socket':
+                $client = new Http\SocketClient($options['host'], $options['port']);
+                break;
+            default:
+                throw new \RuntimeException(sprintf(
+                    'The client option %s does not exist. Supported are "stream" and "socket"',
+                    $options['client']
+                ));
+        }
+
+
+        if (null !== $options['username']) {
+            $client->setOption('username', $options['username']);
+            $client->setOption('password', $options['password']);
+        }
+
+        return new static($client, $evm, $authAdapter);
+    }
 
     /**
      * Constructor
@@ -34,17 +86,16 @@ class Connection
      * @param EventManager            $dispatcher
      * @param AuthenticationInterface $authAdapter
      */
-    public function __construct(ClientInterface $client, EventManager $dispatcher = null, AuthenticationInterface $authAdapter = null)
+    public function __construct(ClientInterface $client, EventManager $dispatcher = null)
     {
         $this->client = $client;
         $this->eventManager = $dispatcher ?: new EventManager();
-        $this->authAdapter = $authAdapter;
     }
 
     /**
      * Return the HTTP Client
      *
-     * @return Http\ClientInterface
+     * @return ClientInterface
      */
     public function getClient()
     {
@@ -54,7 +105,7 @@ class Connection
     /**
      * Set the client
      *
-     * @param Http\ClientInterface $client
+     * @param ClientInterface $client
      */
     public function setClient(ClientInterface $client)
     {
@@ -64,7 +115,7 @@ class Connection
     /**
      * Return the event dispatcher
      *
-     * @return \Doctrine\Common\EventManager
+     * @return EventManager
      */
     public function getEventManager()
     {
@@ -84,7 +135,7 @@ class Connection
             $this->eventManager->dispatchEvent(Events::preConnect, new EventArgs($this));
         }
 
-        $this->client->connect($this->authAdapter);
+        $this->client->connect();
 
         if ($this->eventManager->hasListeners(Events::postConnect)) {
             $this->eventManager->dispatchEvent(Events::postConnect, new EventArgs($this));
@@ -138,6 +189,7 @@ class Connection
     public function dropDatabase($name)
     {
         $this->initialize();
+
         if ($this->eventManager->hasListeners(Events::preDropDatabase)) {
             $this->eventManager->dispatchEvent(Events::preDropDatabase, new EventArgs($this, $name));
         }
@@ -172,7 +224,7 @@ class Connection
 
         $name = urlencode($name);
 
-        $response = $this->client->request("/{$name}");
+        $response = $this->client->request("/{$name}/");
         if (404 === $response->getStatusCode()) {
             throw new \RuntimeException(sprintf('The database %s does not exist', $name));
         }
@@ -186,13 +238,15 @@ class Connection
      * Check if the database exist
      *
      * @param  string $name The database name
+     *
      * @return bool
      */
     public function hasDatabase($name)
     {
         $this->initialize();
+
         $name = urlencode($name);
-        $response = $this->client->request("/{$name}");
+        $response = $this->client->request("/{$name}/");
         if (404 === $response->getStatusCode()) {
             return false;
         }
@@ -203,14 +257,16 @@ class Connection
     /**
      * Create a new database
      *
-     * @param  string            $name
+     * @param string $name The database name
+     *
      * @return Database
+     *
      * @throws \RuntimeException If the database could not be created
      */
     public function createDatabase($name)
     {
         if (preg_match('@[^a-z0-9\_\$\(\)+\-]@', $name)) {
-            throw new \RuntimeException(sprintf('The database name %s is invalid. The database name must match the following pattern (a-z0-9_$()+-', $name));
+            throw new \RuntimeException(sprintf('The database name %s is invalid. The database name must match the following pattern (a-z0-9_$()+-)', $name));
         }
 
         $this->initialize();
@@ -246,7 +302,8 @@ class Connection
     /**
      * Gets the database
      *
-     * @param  string   $name
+     * @param string $name The database name
+     *
      * @return Database
      */
     public function __get($name)
@@ -255,9 +312,10 @@ class Connection
     }
 
     /**
-     * Drop a database
+     * Drop a database.
      *
-     * @param  string $name
+     * @param string $name The databas ename
+     *
      * @return bool
      */
     public function __unset($name)
@@ -268,7 +326,8 @@ class Connection
     /**
      * Check if the database exist
      *
-     * @param  string $name
+     * @param string $name The database name
+     *
      * @return bool
      */
     public function __isset($name)
@@ -279,7 +338,8 @@ class Connection
     /**
      * Wraps the database to a object
      *
-     * @param  string   $name
+     * @param string $name The database name
+     *
      * @return Database
      */
     protected function wrapDatabase($name)

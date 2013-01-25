@@ -10,23 +10,37 @@ use CouchDB\Http;
  */
 class ConnectionTest extends TestCase
 {
-    protected function setUp()
+    public function testCreate()
     {
-        $this->conn = $this->createTestConnection();
-    }
+        $connection = Connection::create();
 
-    protected function tearDown()
-    {
-        if (isset($this->conn->test)) {
-            unset($this->conn->test);
-        }
+        $this->assertInstanceOf('CouchDB\\Http\\SocketClient', $connection->getClient());
+
+        $connection = Connection::create(array(
+            'client'         => 'stream',
+            'username'       => 'john',
+            'password'       => 'password',
+        ));
+
+        $this->assertInstanceOf('CouchDB\\Http\\StreamClient', $connection->getClient());
+        $this->assertEquals('john', $connection->getClient()->getOption('username'));
+        $this->assertEquals('password', $connection->getClient()->getOption('password'));
     }
 
     public function testIsConnected()
     {
-        $this->assertFalse($this->conn->isConnected());
-        $this->conn->initialize();
-        $this->assertTrue($this->conn->isConnected());
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $client->expects($this->exactly(2))
+            ->method('isConnected')
+            ->will($this->returnValue(false));
+
+        $client->expects($this->once())
+            ->method('connect');
+
+        $connection = new Connection($client);
+
+        $this->assertFalse($connection->isConnected());
+        $connection->initialize();
     }
 
     public function testListDatabases()
@@ -39,36 +53,74 @@ class ConnectionTest extends TestCase
             ->with('/_all_dbs')
             ->will($this->returnValue($response));
 
-        $client->expects($this->once())
-            ->method('isConnected')
-            ->will($this->returnValue(true));
-
         $conn = new Connection($client);
 
         $databases = $conn->listDatabases();
         $this->assertEquals(array('_users'), $databases);
     }
 
-    public function testGetDatabase()
-    {
-        $this->conn->createDatabase('test');
-        $database = $this->conn->selectDatabase('test');
-        $this->assertInstanceOf('\\CouchDB\\Database', $database);
-        $this->assertEquals('test', $database->getName());
-    }
-
     public function testCreateDatabase()
     {
-        $database = $this->conn->createDatabase('test');
-        $this->assertInstanceOf('\\CouchDB\\Database', $database);
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+
+        $response = new Response(201, '{"ok": true}', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'PUT')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $connection->createDatabase('test');
+    }
+
+    public function testSelectDatabase()
+    {
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+
+        $response = new Response(200,
+            '{
+                "compact_running": false,
+                "db_name": "test",
+                "disk_format_version": 5,
+                "disk_size": 12377,
+                "doc_count": 1,
+                "doc_del_count": 1,
+                "instance_start_time": "1267612389906234",
+                "purge_seq": 0,
+                "update_seq": 4
+            }',
+            array()
+        );
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'GET')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $database = $connection->selectDatabase('test');
+        $this->assertInstanceOf('CouchDB\\Database', $database);
         $this->assertEquals('test', $database->getName());
     }
 
     public function testCreateExistingDatabase()
     {
-        $this->conn->createDatabase('test');
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+
+        $response = new Response(412, '', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'PUT')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
         try {
-            $this->conn->createDatabase('test');
+            $connection->createDatabase('test');
             $this->fail();
         } catch (\RuntimeException $e) {
             $this->assertEquals('The database test already exist', $e->getMessage());
@@ -77,18 +129,34 @@ class ConnectionTest extends TestCase
 
     public function testCreateDatabaseWithInvalidName()
     {
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $client->expects($this->never())
+            ->method('connect');
+
+        $connection = new Connection($client);
+
         try {
-            $this->conn->createDatabase('Test');
+            $connection->createDatabase('Test');
             $this->fail();
         } catch (\RuntimeException $e) {
-            $this->assertEquals('The database name Test is invalid. The database name must match the following pattern (a-z0-9_$()+-', $e->getMessage());
+            $this->assertEquals('The database name Test is invalid. The database name must match the following pattern (a-z0-9_$()+-)', $e->getMessage());
         }
     }
 
     public function testGetNotExistingDatabase()
     {
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(404, '', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'GET')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
         try {
-            $this->conn->selectDatabase('test');
+            $connection->selectDatabase('test');
             $this->fail();
         } catch (\RuntimeException $e) {
             $this->assertEquals('The database test does not exist', $e->getMessage());
@@ -97,23 +165,63 @@ class ConnectionTest extends TestCase
 
     public function testHasDatabase()
     {
-        $this->assertFalse($this->conn->hasDatabase('test'));
-        $this->conn->createDatabase('test');
-        $this->assertTrue($this->conn->hasDatabase('test'));
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(404, '', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'GET')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $this->assertFalse($connection->hasDatabase('test'));
+    }
+
+    public function testHasDatabaseWithExistingDatabase()
+    {
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(200, '', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'GET')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $this->assertTrue($connection->hasDatabase('test'));
     }
 
     public function testDropDatabase()
     {
-        $this->conn->createDatabase('test');
-        $this->assertTrue($this->conn->hasDatabase('test'));
-        $this->conn->dropDatabase('test');
-        $this->assertFalse($this->conn->hasDatabase('test'));
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(200, '{"ok": true}', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'DELETE')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $connection->dropDatabase('test');
     }
 
     public function testDropNotExistDatabase()
     {
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(404, '', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/test/', 'DELETE')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
         try {
-            $this->conn->dropDatabase('test');
+            $connection->dropDatabase('test');
             $this->fail();
         } catch (\RuntimeException $e) {
             $this->assertEquals('The database test does not exist', $e->getMessage());
@@ -122,41 +230,41 @@ class ConnectionTest extends TestCase
 
     public function testGetVersion()
     {
-        $version = $this->conn->version();
-        $this->assertInternalType('string', $version);
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $response = new Response(200, '{"couchdb":"Welcome","version":"0.11.0"}', array());
+
+        $client->expects($this->once())
+            ->method('request')
+            ->with('/', 'GET')
+            ->will($this->returnValue($response));
+
+        $connection = new Connection($client);
+
+        $version = $connection->version();
+
+        $this->assertEquals('0.11.0', $version);
     }
 
     public function testGetAndSetClient()
     {
-        $mock = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $this->assertInstanceOf('CouchDB\\Http\\ClientInterface', $client = $this->conn->getClient());
-        $this->assertNull($this->conn->setClient($mock));
-        $this->conn->setClient($client);
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $connection = new Connection($client);
+
+        $this->assertEquals($client, $connection->getClient());
+
+        $client2 = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $connection->setClient($client2);
+
+        $this->assertEquals($client2, $connection->getClient());
     }
 
     public function testGetEventManager()
     {
-        $this->assertInstanceOf('Doctrine\\Common\\EventManager', $this->conn->getEventManager());
-    }
+        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
+        $evm = $this->getMock('Doctrine\\Common\\EventManager');
 
-    public function testMagicFunctions()
-    {
-        $this->conn->createDatabase('test');
-        $db = $this->conn->test;
-        $this->assertInstanceOf('CouchDB\\Database', $db);
-        $this->assertEquals('test', $db->getName());
+        $connection = new Connection($client, $evm);
 
-        $this->assertTrue(isset($this->conn->test));
-        unset($this->conn->test);
-        $this->assertFalse(isset($this->conn->test));
-    }
-
-    public function testUtilizesAuthAdapter()
-    {
-        $authAdapter = $this->getMock('CouchDB\Authentication\AuthenticationInterface');
-        $authAdapter->expects($this->once())->method('authorize');
-
-        $conn = new Connection(new Http\StreamClient(), null, $authAdapter);
-        $conn->initialize();
+        $this->assertEquals($evm, $connection->getEventManager());
     }
 }
