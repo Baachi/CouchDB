@@ -13,11 +13,6 @@ use Doctrine\Common\EventManager;
 class Connection
 {
     /**
-     * @var AuthenticationInterface
-     */
-    private $authAdapter;
-
-    /**
      * @var ClientInterface
      */
     private $client;
@@ -74,7 +69,7 @@ class Connection
             $client->setOption('password', $options['password']);
         }
 
-        return new static($client, $evm, $authAdapter);
+        return new static($client, $evm);
     }
 
     /**
