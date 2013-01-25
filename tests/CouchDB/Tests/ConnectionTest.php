@@ -127,6 +127,9 @@ class ConnectionTest extends TestCase
         }
     }
 
+    /**
+     * @expectedException CouchDB\Exception\InvalidDatabasenameException
+     */
     public function testCreateDatabaseWithInvalidName()
     {
         $client = $this->getMock('CouchDB\\Http\\ClientInterface');
@@ -134,13 +137,7 @@ class ConnectionTest extends TestCase
             ->method('connect');
 
         $connection = new Connection($client);
-
-        try {
-            $connection->createDatabase('Test');
-            $this->fail();
-        } catch (\RuntimeException $e) {
-            $this->assertEquals('The database name Test is invalid. The database name must match the following pattern (a-z0-9_$()+-)', $e->getMessage());
-        }
+        $connection->createDatabase('Test');    
     }
 
     public function testGetNotExistingDatabase()

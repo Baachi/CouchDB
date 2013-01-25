@@ -4,10 +4,8 @@ namespace CouchDB;
 use CouchDB\Http\ClientInterface;
 use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
+use CouchDB\Exception\InvalidDatabasenameException;
 use Doctrine\Common\EventManager;
-use CouchDB\Authentication\AuthenticationInterface;
-use CouchDB\Authentication\CookieAuthentication;
-use CouchDB\Authentication\HttpBasicAuthentication;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -266,7 +264,7 @@ class Connection
     public function createDatabase($name)
     {
         if (preg_match('@[^a-z0-9\_\$\(\)+\-]@', $name)) {
-            throw new \RuntimeException(sprintf('The database name %s is invalid. The database name must match the following pattern (a-z0-9_$()+-)', $name));
+            throw new InvalidDatabasenameException(sprintf('The database name %s is invalid. The database name must match the following pattern (a-z0-9_$()+-)', $name));
         }
 
         $this->initialize();
