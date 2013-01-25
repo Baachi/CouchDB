@@ -6,7 +6,7 @@ namespace CouchDB;
  */
 final class Version
 {
-    const VERSION = '0.9-alpha';
+    const VERSION = '1.0-beta';
 
     /**
      * Compare a given version with the current version
