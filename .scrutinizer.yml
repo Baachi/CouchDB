@@ -10,5 +10,6 @@ tools:
     php_pdepend:
         excluded_dirs: [vendor]
     php_code_coverage:
+        test_command: phpunit --excluded-group http  
         filter:
             paths: [src/]
