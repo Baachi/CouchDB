@@ -8,12 +8,18 @@ use CouchDB\Http\StreamClient;
  */
 class StreamClientTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @group http
+     */
     public function testIsNotConnectedInitially()
     {
         $client = new StreamClient();
         $this->assertFalse($client->isConnected());
     }
 
+    /**
+     * @group http
+     */
     public function testConnect()
     {
         $client = new StreamClient();

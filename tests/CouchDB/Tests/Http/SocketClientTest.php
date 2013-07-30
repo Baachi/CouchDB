@@ -9,12 +9,18 @@ use CouchDB\Http\SocketClient;
  */
 class SocketClientTest extends TestCase
 {
+    /**
+     * @group http
+     */
     public function testIsNotConnectedInitially()
     {
         $client = new SocketClient();
         $this->assertFalse($client->isConnected());
     }
 
+    /**
+     * @group http
+     */
     public function testConnect()
     {
         $client = new SocketClient();
@@ -22,6 +28,9 @@ class SocketClientTest extends TestCase
         $this->assertTrue($client->isConnected());
     }
 
+    /**
+     * @group http
+     */
     public function testRequest()
     {
         $client = new SocketClient();
@@ -32,6 +41,9 @@ class SocketClientTest extends TestCase
         $this->assertTrue($response->isSuccessful());
     }
 
+    /**
+     * @group http
+     */
     public function testCanUseSameConnectionForMultipleRequests()
     {
         $client = new SocketClient();
