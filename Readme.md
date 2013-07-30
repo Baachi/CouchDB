@@ -11,22 +11,7 @@ Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrin
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/Baachi/CouchDB/badges/quality-score.png?s=5c5013c398de5097793c1210a87a6d94493006f2)](https://scrutinizer-ci.com/g/Baachi/CouchDB/)
 
 ## Installation ##
-
-__GitHub:__
-
-You can clone the repository:
-
-```
-git clone --recursive https://github.com/Baachi/CouchDB.git
-```
-
-or if you already use git in your project
-
-```
-git submodule add https://github.com/Baachi/CouchDB.git
-```
-
-__Composer:__
+__Composer (recommend)__
 
 You can install CouchDB Client over composer. Add the following line into your ```composer.json``` file.
 
@@ -36,28 +21,33 @@ You can install CouchDB Client over composer. Add the following line into your `
 }
 ```
 
-And now, if you not use a autoloader, include the ``` autoload.php.dist``` in your project.
+__Git__
 
-``` php
-<?php
-require_once '/path/to/couchdb/autoload.php.dist';
+You can clone the repository:
+
 ```
+git clone https://github.com/Baachi/CouchDB.git
+```
+
+or if you already use git in your project
+
+```
+git submodule add https://github.com/Baachi/CouchDB.git
+```
+
 
 ## Usage ##
 
 ### Initialize ###
 
-``` php
-<?php
-require_once '/path/to/couchdb/autoload.php.dist';
+```php
 $client = new \CouchDB\Http\StreamClient('localhost', 5984);
 $connection = new \CouchDB\Connection($client);
 ```
 
 ### Creates a database ###
 
-``` php
-<?php
+```php
 $database = $conn->createDatabase('foobar');
 // or with magic method
 $database = $conn->foobar;
@@ -65,8 +55,7 @@ $database = $conn->foobar;
 
 ### Get a database instance ###
 
-``` php
-<?php
+```php
 $database = $conn->selectDatabase('foobar');
 // or with magic method
 $database = $conn->foobar;
@@ -74,12 +63,11 @@ $database = $conn->foobar;
 ### Delete a database ###
 
 ```php
-<?php
-if (true === $conn->hasDatabase('foobar') {
+if (true === $conn->hasDatabase('foobar')) {
     $conn->dropDatabase('foobar');
 }
 // or with magic methods
-if ( isset($conn->foobar) ){
+if (isset($conn->foobar)){
     unset($conn->foobar);
 }
 ```
