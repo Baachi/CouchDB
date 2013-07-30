@@ -1,0 +1,14 @@
+filter:
+    excluded_paths: [vendor/*]
+
+before_commands:
+    - "composer install --prefer-source"
+
+tools:
+    php_mess_detector: true
+    php_cpd: true
+    php_pdepend:
+        excluded_dirs: [vendor]
+    php_code_coverage:
+        filter:
+            paths: [src/]
