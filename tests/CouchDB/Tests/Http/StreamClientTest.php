@@ -19,12 +19,4 @@ class StreamClientTest extends \PHPUnit_Framework_TestCase
         $client = new StreamClient();
         $this->assertEquals($client, $client->connect());
     }
-
-    public function testGetRequestWorks()
-    {
-        $client = new StreamClient('localhost', '80');
-        $response = $client->request('/');
-
-        $this->assertInstanceOf('CouchDB\\Http\\Response\\Response', $response);
-    }
 }
