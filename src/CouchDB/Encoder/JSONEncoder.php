@@ -23,6 +23,9 @@ class JSONEncoder implements EncoderInterface
         if ("null" === $json && $value !== null) {
             throw new JsonEncodeException($value);
         }
+        if (false === $json) {
+            throw new JsonEncodeException($value);
+        }
 
         return $json;
     }
