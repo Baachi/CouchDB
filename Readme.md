@@ -10,6 +10,8 @@ Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrin
 
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/Baachi/CouchDB/badges/quality-score.png?s=5c5013c398de5097793c1210a87a6d94493006f2)](https://scrutinizer-ci.com/g/Baachi/CouchDB/)
 
+[![Code Coverage](https://scrutinizer-ci.com/g/Baachi/CouchDB/badges/coverage.png?s=61e18d0b5850e702442bef89fe66aee830a4ecd4)](https://scrutinizer-ci.com/g/Baachi/CouchDB/)
+
 ## Installation ##
 __Composer (recommend)__
 
