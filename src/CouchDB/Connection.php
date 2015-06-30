@@ -25,11 +25,8 @@ class Connection
     private $eventManager;
 
     /**
-     * Constructor
-     *
-     * @param ClientInterface         $client
-     * @param EventManager            $dispatcher
-     * @param AuthenticationInterface $authAdapter
+     * @param ClientInterface $client
+     * @param EventManager    $dispatcher
      */
     public function __construct(ClientInterface $client, EventManager $dispatcher = null)
     {
@@ -77,6 +74,7 @@ class Connection
      * Drop a database
      *
      * @param  string $name
+     *
      * @return bool
      */
     public function dropDatabase($name)

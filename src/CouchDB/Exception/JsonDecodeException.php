@@ -17,8 +17,8 @@ class JsonDecodeException extends \Exception
 
     public function __construct($json, $code = 0, $previous = null)
     {
-        $message = sprintf('Json decode error [%s]: %s', static::$errors[json_last_error()], $json);
-        
+        $message = sprintf('Json decode error [%s]: %s', self::$errors[json_last_error()], $json);
+
         parent::__construct($message, $code, $previous);
     }
 
