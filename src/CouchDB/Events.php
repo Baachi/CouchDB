@@ -5,9 +5,6 @@ namespace CouchDB;
  */
 final class Events
 {
-    const preConnect  = 'preConnect';
-    const postConnect = 'postConnect';
-
     const preDropDatabase = 'preDropDatabase';
     const postDropDatabase = 'postDropDatabase';
 

@@ -1,9 +1,9 @@
 <?php
 namespace CouchDB\Util;
 
-use CouchDB\Http\ClientInterface;
 use CouchDB\Encoder\JSONEncoder;
 use CouchDB\Database;
+use GuzzleHttp\ClientInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -11,12 +11,12 @@ use CouchDB\Database;
 class BatchUpdater
 {
     /**
-     * @var \CouchDB\Http\ClientInterface
+     * @var ClientInterface
      */
     private $client;
 
     /**
-     * @var \CouchDB\Database
+     * @var Database
      */
     private $database;
 
@@ -36,7 +36,7 @@ class BatchUpdater
         $this->client = $client;
         $this->database = $db;
 
-        $this->data = array('docs' => array());
+        $this->data = ['docs' => array()];
     }
 
     /**
@@ -63,7 +63,7 @@ class BatchUpdater
      */
     public function delete($id, $rev)
     {
-        $this->data['docs'][] = array('_id' => $id, '_rev' => $rev, '_deleted' => true);
+        $this->data['docs'][] = ['_id' => $id, '_rev' => $rev, '_deleted' => true];
 
         return $this;
     }
@@ -75,17 +75,11 @@ class BatchUpdater
      */
     public function execute()
     {
-        $json    = JSONEncoder::encode($this->data);
+        $response = $this->client->request('POST', "/{$this->database->getName()}/_bulk_docs", [
+            'body' => JSONEncoder::encode($this->data),
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
 
-        $response = $this->client->request(
-            "/{$this->database->getName()}/_bulk_docs",
-            ClientInterface::METHOD_POST,
-            $json,
-            array(
-                'Content-Type' => 'application/json'
-            )
-        );
-
-        return JSONEncoder::decode($response->getContent());
+        return JSONEncoder::decode((string) $response->getBody());
     }
 }

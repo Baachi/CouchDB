@@ -2,29 +2,28 @@
 namespace CouchDB\Tests;
 
 use CouchDB\Connection;
-use CouchDB\Http\StreamClient;
-use CouchDB\Http\LoggingClient;
+use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class TestCase extends \PHPUnit_Framework_TestCase
 {
-    public function createTestConnection()
+    protected $mock;
+
+    protected $client;
+
+    protected $connection;
+
+    protected function setUp()
     {
-        $client = new LoggingClient(new StreamClient());
-        $conn   = new Connection($client);
-
-        return $conn;
-    }
-
-    public function createTestDatabase($name = 'test')
-    {
-        $conn = $this->createTestConnection();
-        if ($conn->hasDatabase($name)) {
-            $conn->dropDatabase($name);
-        }
-
-        return $conn->createDatabase($name);
+        $this->mock = new MockHandler();
+        $this->client = new Client([
+            'handler' => HandlerStack::create($this->mock),
+            'http_errors' => false,
+        ]);
+        $this->connection = new Connection($this->client);
     }
 }

@@ -3,43 +3,27 @@ namespace CouchDB\Tests;
 
 use CouchDB\Database;
 use CouchDB\Connection;
-use CouchDB\Http\Response\Response;
+use GuzzleHttp\Psr7\Response;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
 class DatabaseTest extends TestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->db = new Database('test', $this->connection, $this->client);
+    }
     public function testGetName()
     {
-        $connection = $this->getMockBuilder('CouchDB\\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $db = new Database('test', $connection);
-
-        $this->assertEquals('test', $db->getName());
-    }
-
-    public function testGetConnection()
-    {
-        $connection = $this->getMockBuilder('CouchDB\\Connection')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $db = new Database('test', $connection);
-
-        $this->assertEquals($connection, $db->getConnection());
+        $this->assertEquals('test', $this->db->getName());
     }
 
     public function testGetInfo()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $db = new Database('test', $connection);
-
-        $response = new Response(200,
+        $this->mock->append(new Response(200, [],
             '{
                 "compact_running": false,
                 "db_name": "test",
@@ -50,16 +34,15 @@ class DatabaseTest extends TestCase
                 "instance_start_time": "1267612389906234",
                 "purge_seq": 0,
                 "update_seq": 4
-            }',
-            array()
-        );
+            }'
+        ));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/', 'GET')
-            ->will($this->returnValue($response));
+        $info = $this->db->getInfo();
 
-        $info = $db->getInfo();
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('GET', $request->getMethod());
+        $this->assertEquals('/test/', $request->getUri()->getPath());
 
         $this->assertEquals('test', $info['db_name']);
         $this->assertEquals(false, $info['compact_running']);
@@ -74,19 +57,15 @@ class DatabaseTest extends TestCase
 
     public function testInsertWithOutId()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(201, '{"ok":true, "id":"123BAC", "rev":"946B7D1C"}', array());
-
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/', 'POST', '{"author":"JohnDoe"}')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
+        $this->mock->append(new Response(201, [], '{"ok":true, "id":"123BAC", "rev":"946B7D1C"}'));
         $doc = array('author' => 'JohnDoe');
-        $db->insert($doc);
+
+        $this->db->insert($doc);
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertEquals('/test/', $request->getUri()->getPath());
+        $this->assertEquals('{"author":"JohnDoe"}', (string) $request->getBody());
 
         $this->assertEquals('123BAC', $doc['_id']);
         $this->assertEquals('946B7D1C', $doc['_rev']);
@@ -94,19 +73,16 @@ class DatabaseTest extends TestCase
 
     public function testInsertWithId()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
+        $this->mock->append(new Response(201, [], '{"ok":true, "id":"john-doe", "rev":"946B7D1C"}'));
 
-        $response = new Response(201, '{"ok":true, "id":"john-doe", "rev":"946B7D1C"}', array());
-
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/john-doe', 'PUT', '{"author":"JohnDoe"}')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
         $doc = array('author' => 'JohnDoe', '_id' => 'john-doe');
-        $db->insert($doc);
+        $this->db->insert($doc);
+
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('PUT', $request->getMethod());
+        $this->assertEquals('/test/john-doe', $request->getUri()->getPath());
+        $this->assertEquals('{"author":"JohnDoe"}', (string) $request->getBody());
 
         $this->assertEquals('john-doe', $doc['_id']);
         $this->assertEquals('946B7D1C', $doc['_rev']);
@@ -114,28 +90,21 @@ class DatabaseTest extends TestCase
 
     public function testFind()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(
-            200,
+        $this->mock->append(new Response(200, [],
             '{
                 "_id":"john-doe",
                 "_rev":"946B7D1C",
                 "author": "johnDoe",
                 "title": "CouchDB"
-            }',
-            array()
-        );
+            }'
+        ));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/john-doe', 'GET')
-            ->will($this->returnValue($response));
+        $doc = $this->db->find('john-doe');
 
-        $db = new Database('test', $connection);
+        $request = $this->mock->getLastRequest();
 
-        $doc = $db->find('john-doe');
+        $this->assertEquals('GET', $request->getMethod());
+        $this->assertEquals('/test/john-doe', $request->getUri()->getPath());
 
         $this->assertEquals('john-doe', $doc['_id']);
         $this->assertEquals('946B7D1C', $doc['_rev']);
@@ -144,157 +113,122 @@ class DatabaseTest extends TestCase
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException \CouchDB\Exception\Exception
      */
     public function testFindNotExistDocument()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(404, '{}', array());
-
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/john-doe', 'GET')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
-
-        $db->find('john-doe');
+        $this->mock->append(new Response(404, [], '{}'));
+        $this->db->find('john-doe');
     }
 
     public function testUpdate()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
+        $this->mock->append(new Response(201, [], '{"ok":true, "id":"john-doe", "rev":"946B7D1C"}'));
 
-        $response = new Response(
-            201,
-            '{"ok":true, "id":"john-doe", "rev":"946B7D1C"}',
-            array()
-        );
-
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/john-doe', 'PUT', '{"_id":"john-doe","_rev":"946B7D1C","author":"johnDoe","title":"CouchDB"}')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
-
-        $doc = array(
+        $doc = [
             '_id'    => 'john-doe',
             '_rev'   =>  '946B7D1C',
             'author' => 'johnDoe',
             'title'  => 'CouchDB',
-        );
+        ];
 
-        $db->update('john-doe', $doc);
+        $this->db->update('john-doe', $doc);
 
         $this->assertEquals('john-doe', $doc['_id']);
         $this->assertEquals('946B7D1C', $doc['_rev']);
         $this->assertEquals('johnDoe', $doc['author']);
         $this->assertEquals('CouchDB', $doc['title']);
+
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('PUT', $request->getMethod());
+        $this->assertEquals('/test/john-doe', $request->getUri()->getPath());
+        $this->assertEquals(
+            '{"_id":"john-doe","_rev":"946B7D1C","author":"johnDoe","title":"CouchDB"}',
+            (string) $request->getBody()
+        );
     }
 
     public function testDelete()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
+        $this->mock->append(new Response(200, [], '{"ok":true,"rev":"946B7D1C"}'));
 
-        $response = new Response(200, '{"ok":true,"rev":"946B7D1C"}', array());
+        $this->assertTrue($this->db->delete('some-doc', '946B7D1C'));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/some-doc?rev=946B7D1C', 'DELETE')
-            ->will($this->returnValue($response));
+        $request = $this->mock->getLastRequest();
 
-        $db = new Database('test', $connection);
-
-        $this->assertTrue($db->delete('some-doc', '946B7D1C'));
+        $this->assertEquals('DELETE', $request->getMethod());
+        $this->assertEquals('/test/some-doc', $request->getUri()->getPath());
+        $this->assertEquals('rev=946B7D1C', $request->getUri()->getQuery());
     }
 
     public function testFindAll()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(200, '{
+        $this->mock->append(new Response(200, [], '{
   "total_rows": 3, "offset": 0, "rows": [
     {"id": "doc1", "key": "doc1", "value": {"rev": "4324BB"}},
     {"id": "doc2", "key": "doc2", "value": {"rev":"2441HF"}},
     {"id": "doc3", "key": "doc3", "value": {"rev":"74EC24"}}
   ]
-}', array());
+}'));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/_all_docs?include_docs=true', 'GET')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
-        $result = $db->findAll();
+        $result = $this->db->findAll();
 
         $this->assertEquals(3, $result['total_rows']);
         $this->assertEquals(0, $result['offset']);
         $this->assertCount(3, $result['rows']);
+
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('GET', $request->getMethod());
+        $this->assertEquals('/test/_all_docs', $request->getUri()->getPath());
+        $this->assertEquals('include_docs=true', $request->getUri()->getQuery());
     }
 
     public function testFindDocuments()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(200, '{
+        $this->mock->append(new Response(200, [], '{
   "total_rows": 100, "offset": 0, "rows": [
     {"id": "doc1", "key": "1", "value": {"rev":"4324BB"}},
     {"id": "doc2", "key": "2", "value": {"rev":"2441HF"}}
   ]
-}', array());
+}'));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/_all_docs?include_docs=true', 'POST', '{"keys":["1","2"]}')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
-
-        $docs = $db->findDocuments(array('1', '2'));
+        $docs = $this->db->findDocuments(array('1', '2'));
         $this->assertEquals(100, $docs['total_rows']);
         $this->assertCount(2, $docs['rows']);
+
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('POST', $request->getMethod());
+        $this->assertEquals('/test/_all_docs', $request->getUri()->getPath());
+        $this->assertEquals('include_docs=true', $request->getUri()->getQuery());
+        $this->assertEquals('{"keys":["1","2"]}', (string) $request->getBody());
     }
 
     public function testCreateBatchUpdater()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-        $db = new Database('test', $connection);
-
-        $this->assertInstanceOf('CouchDB\\Util\\BatchUpdater', $db->createBatchUpdater());
+        $this->assertInstanceOf('CouchDB\\Util\\BatchUpdater', $this->db->createBatchUpdater());
     }
 
     public function testGetChanges()
     {
-        $client = $this->getMock('CouchDB\\Http\\ClientInterface');
-        $connection = new Connection($client);
-
-        $response = new Response(200, '{"results":[
+        $this->mock->append(new Response(200, [], '{"results":[
 {"seq":1,"id":"fresh","changes":[{"rev":"1-967a00dff5e02add41819138abb3284d"}]},
 {"seq":3,"id":"updated","changes":[{"rev":"2-7051cbe5c8faecd085a3fa619e6e6337"}]},
 {"seq":5,"id":"deleted","changes":[{"rev":"2-eec205a9d413992850a6e32678485900"}],"deleted":true}
 ],
-"last_seq":5}', array());
+"last_seq":5}'));
 
-        $client->expects($this->once())
-            ->method('request')
-            ->with('/test/_changes', 'GET')
-            ->will($this->returnValue($response));
-
-        $db = new Database('test', $connection);
-
-        $changes = $db->getChanges();
+        $changes = $this->db->getChanges();
 
         $this->assertArrayHasKey('results', $changes);
         $this->assertCount(3, $changes['results']);
         $this->assertEquals(5, $changes['last_seq']);
+
+        $request = $this->mock->getLastRequest();
+
+        $this->assertEquals('GET', $request->getMethod());
+        $this->assertEquals('/test/_changes', $request->getUri()->getPath());
     }
 }

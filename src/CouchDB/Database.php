@@ -1,8 +1,9 @@
 <?php
 namespace CouchDB;
 
-use CouchDB\Http\ClientInterface;
 use CouchDB\Encoder\JSONEncoder;
+use CouchDB\Exception\Exception;
+use GuzzleHttp\ClientInterface;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
@@ -20,49 +21,48 @@ class Database
     private $name;
 
     /**
-     * Constructor
-     *
-     * @param string $name
-     * @param Connection $conn
+     * @var ClientInterface
      */
-    public function __construct($name, Connection $conn)
+    private $client;
+
+    public function __construct($name, Connection $conn, ClientInterface $client)
     {
         $this->conn = $conn;
         $this->name = $name;
+        $this->client = $client;
     }
 
     /**
-     * Find a document by a id
+     * Find a document by a id.
      *
-     * @param $id
+     * @param string $id
+
      * @return mixed
-     * @throws \RuntimeException
+
+     * @throws Exception If the document doesn't exists.
      */
     public function find($id)
     {
-        $this->conn->initialize();
-
-        $response = $this->conn->getClient()->request("/{$this->name}/{$id}");
-        $json     = $response->getContent();
+        $response = $this->client->request('GET', sprintf('/%s/%s', $this->name, $id));
+        $json     = (string) $response->getBody();
 
         if (404 === $response->getStatusCode()) {
-            throw new \RuntimeException('Document does not exist');
+            throw new Exception('Document does not exist');
         }
 
         return JSONEncoder::decode($json);
     }
 
     /**
-     * Find all documents from the database
+     * Find all documents from the database.
      *
-     * @param  null  $limit
-     * @param  null  $startKey
+     * @param integer|null $limit
+     * @param string|null $startKey
+     *
      * @return mixed
      */
     public function findAll($limit = null, $startKey = null)
     {
-        $this->conn->initialize();
-
         $path = "/{$this->name}/_all_docs?include_docs=true";
 
         if (null !== $limit) {
@@ -72,7 +72,7 @@ class Database
             $path .= '&startkey=' . (string) $startKey;
         }
 
-        $json = $this->conn->getClient()->request($path)->getContent();
+        $json = (string) $this->client->request('GET', $path)->getBody();
         $docs = JSONEncoder::decode($json);
 
         return $docs;
@@ -89,8 +89,6 @@ class Database
      */
     public function findDocuments(array $ids, $limit = null, $offset = null)
     {
-        $this->conn->initialize();
-
         $path = "/{$this->name}/_all_docs?include_docs=true";
 
         if (null !== $limit) {
@@ -100,59 +98,46 @@ class Database
             $path .= '&skip=' . (integer) $offset;
         }
 
-        $json = JSONEncoder::encode(array('keys' => $ids));
+        $response = $this->client->request('POST', $path, [
+            'body' => JSONEncoder::encode(['keys' => $ids]),
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
 
-        $response = $this->conn->getClient()->request(
-            $path,
-            ClientInterface::METHOD_POST,
-            $json,
-            array('Content-Type' => 'application/json')
-        );
-
-        $value = JSONEncoder::decode($response->getContent());
-
-        return $value;
+        return JSONEncoder::decode((string) $response->getBody());
     }
 
     /**
      * Insert a new document.
      *
-     * @param  array             $doc
-     * @throws \RuntimeException
+     * @param array $doc
+     *
+     * @throws Exception
      */
     public function insert(array &$doc)
     {
-        $this->conn->initialize();
-
         if (isset($doc['_id'])) {
             $clone = $doc;
             unset($clone['_id']);
 
-            $response = $this->conn->getClient()->request(
-                "/{$this->name}/{$doc['_id']}",
-                ClientInterface::METHOD_PUT,
-                JSONEncoder::encode($clone),
-                array('Content-Type' => 'application/json')
-            );
+            $response = $this->client->request('PUT', "/{$this->name}/{$doc['_id']}", [
+                'body' => JSONEncoder::encode($clone),
+                'headers' => ['Content-Type' => 'application/json']
+            ]);
         } else {
-            $response = $this->conn->getClient()->request(
-                "/{$this->name}/",
-                ClientInterface::METHOD_POST,
-                JSONEncoder::encode($doc),
-                array('Content-Type' => 'application/json')
-            );
+            $response = $this->client->request('POST', "/{$this->name}/", [
+                'body' => JSONEncoder::encode($doc),
+                'headers' => ['Content-Type' => 'application/json']
+            ]);
         }
 
         if (201 !== $response->getStatusCode()) {
-            throw new \RuntimeException('Unable to save document');
+            throw new Exception('Unable to save document');
         }
 
-        $value  = JSONEncoder::decode($response->getContent());
-        $id     = $value['id'];
-        $rev    = $value['rev'];
+        $value = JSONEncoder::decode((string) $response->getBody());
 
-        $doc['_id'] = $id;
-        $doc['_rev'] = $rev;
+        $doc['_id'] = $value['id'];
+        $doc['_rev'] = $value['rev'];
     }
 
     /**
@@ -160,32 +145,26 @@ class Database
      *
      * @param  string            $id  The id from the document
      * @param  array             $doc A reference from the document
-     * @return bool
-     * @throws \RuntimeException
+     *
+     * @throws Exception
      */
     public function update($id, array &$doc)
     {
-        $this->conn->initialize();
-
         $json = JSONEncoder::encode($doc);
 
-        $response = $this->getConnection()->getClient()->request(
-            "/{$this->name}/{$id}",
-            ClientInterface::METHOD_PUT,
-            $json,
-            array('Content-Type' => 'application/json')
-        );
+        $response = $this->client->request('PUT', "/{$this->name}/{$id}", [
+            'body' => $json,
+            'headers' => ['Content-Type' => 'application/json']
+        ]);
 
         if (201 !== $response->getStatusCode()) {
-            throw new \RuntimeException('Unable to save document');
+            throw new Exception('Unable to save document');
         }
 
-        $value = JSONEncoder::decode($response->getContent());
+        $value = JSONEncoder::decode((string) $response->getBody());
 
         $doc['_id'] = $value['id'];
         $doc['_rev'] = $value['rev'];
-
-        return true;
     }
 
     /**
@@ -199,11 +178,10 @@ class Database
      */
     public function delete($id, $rev)
     {
-        $this->conn->initialize();
-        $response = $this->conn->getClient()->request("/{$this->name}/{$id}?rev={$rev}", ClientInterface::METHOD_DELETE);
+        $response = $this->client->request('DELETE', "/{$this->name}/{$id}?rev={$rev}");
 
         if (200 !== $response->getStatusCode()) {
-            throw new \RuntimeException(sprintf('Unable to delete %s', $id));
+            throw new Exception(sprintf('Unable to delete %s', $id));
         }
 
         return true;
@@ -216,7 +194,7 @@ class Database
      */
     public function createBatchUpdater()
     {
-        return new Util\BatchUpdater($this->conn->getClient(), $this);
+        return new Util\BatchUpdater($this->client, $this);
     }
 
     /**
@@ -226,11 +204,9 @@ class Database
      */
     public function getInfo()
     {
-        $this->conn->initialize();
-        $json = $this->conn->getClient()->request("/{$this->name}/")->getContent();
-        $info = JSONEncoder::decode($json);
+        $json = (string) $this->client->request('GET', "/{$this->name}/")->getBody();
 
-        return $info;
+        return JSONEncoder::decode($json);
     }
 
     /**
@@ -242,14 +218,13 @@ class Database
      */
     public function getChanges()
     {
-        $this->conn->initialize();
-        $response = $this->conn->getClient()->request("/{$this->name}/_changes");
+        $response = $this->client->request('GET', "/{$this->name}/_changes");
 
-        if (false === $response->isSuccessful()) {
-            throw new \RuntimeException('Request wasn\'t successfull');
+        if (200 !== $response->getStatusCode()) {
+            throw new Exception('Request wasn\'t successfull');
         }
 
-        return JSONEncoder::decode($response->getContent());
+        return JSONEncoder::decode((string) $response->getBody());
     }
 
     /**
