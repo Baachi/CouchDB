@@ -6,7 +6,7 @@ namespace CouchDB\Exception;
  */
 class JsonDecodeException extends \Exception
 {
-    protected static $errors = array(
+    private static $errors = array(
         JSON_ERROR_NONE           => 'unknown error',
         JSON_ERROR_DEPTH          => 'The maximum stack depth has been exceeded',
         JSON_ERROR_SYNTAX         => 'Syntax error',
@@ -18,6 +18,7 @@ class JsonDecodeException extends \Exception
     public function __construct($json, $code = 0, $previous = null)
     {
         $message = sprintf('Json decode error [%s]: %s', static::$errors[json_last_error()], $json);
+        
         parent::__construct($message, $code, $previous);
     }
 

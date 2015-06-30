@@ -12,12 +12,12 @@ class Database
     /**
      * @var Connection
      */
-    protected $conn;
+    private $conn;
 
     /**
      * @var string
      */
-    protected $name;
+    private $name;
 
     /**
      * Constructor
@@ -29,27 +29,6 @@ class Database
     {
         $this->conn = $conn;
         $this->name = $name;
-    }
-
-    /**
-     * Gets the current connection
-     *
-     * @return Connection
-     */
-    public function getConnection()
-    {
-        return $this->conn;
-    }
-
-    /**
-     * Sets a new connection
-     *
-     * @param Connection $conn
-     */
-    public function setConnection(Connection $conn)
-    {
-        $this->conn = $conn;
-        $this->conn->initialize();
     }
 
     /**
