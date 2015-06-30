@@ -1,6 +1,5 @@
 {
-    "name": "baachi/couchdb",
-    "version": "0.8",
+    "name": "bachi/couchdb",
     "description": "CouchDB Client for PHP >=5.5",
     "keywords": ["couchdb", "database", "NoSQL"],
     "homepage": "https://github.com/Baachi/CouchDB",
