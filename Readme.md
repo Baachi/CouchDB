@@ -1,9 +1,6 @@
 # CouchDB #
 A CouchDB Client for >=PHP 5.5 with event system.
 
-> __Please Note__
-> This is library is currently in development! Do not use it in __production__.
-
 Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrine/CouchDB](https://github.com/Doctrine/couchdb-odm)
 
 [![Build Status](https://secure.travis-ci.org/Baachi/CouchDB.png)](http://travis-ci.org/Baachi/CouchDB)
