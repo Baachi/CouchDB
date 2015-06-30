@@ -80,7 +80,9 @@ class Connection
     public function dropDatabase($name)
     {
         if ($this->eventManager->hasListeners(Events::preDropDatabase)) {
+            // @codeCoverageIgnoreStart
             $this->eventManager->dispatchEvent(Events::preDropDatabase, new EventArgs($this, $name));
+            // @codeCoverageIgnoreEnd
         }
 
         $response = $this->client->request('DELETE', sprintf('/%s/', urlencode($name)));
@@ -93,7 +95,9 @@ class Connection
         $status = JSONEncoder::decode($json);
 
         if ($this->eventManager->hasListeners(Events::postDropDatabase)) {
+            // @codeCoverageIgnoreStart
             $this->eventManager->dispatchEvent(Events::postDropDatabase, new EventArgs($this, $name));
+            // @codeCoverageIgnoreEnd
         }
 
         return isset($status['ok']) && $status['ok'] === true;
@@ -155,7 +159,9 @@ class Connection
         }
 
         if ($this->eventManager->hasListeners(Events::preCreateDatabase)) {
+            // @codeCoverageIgnoreStart
             $this->eventManager->dispatchEvent(Events::preCreateDatabase, new EventArgs($this, $name));
+            // @codeCoverageIgnoreEnd
         }
 
         $response  = $this->client->request('PUT', sprintf('/%s', $name));
@@ -174,7 +180,9 @@ class Connection
         $database = $this->wrapDatabase($name);
 
         if ($this->eventManager->hasListeners(Events::postCreateDatabase)) {
+            // @codeCoverageIgnoreStart
             $this->eventManager->dispatchEvent(Events::postCreateDatabase, new EventArgs($database));
+            // @codeCoverageIgnoreEnd
         }
 
         return $database;
@@ -186,6 +194,8 @@ class Connection
      * @param string $name The database name
      *
      * @return Database
+     *
+     * @codeCoverageIgnore
      */
     public function __get($name)
     {
@@ -198,6 +208,8 @@ class Connection
      * @param string $name The databas ename
      *
      * @return bool
+     *
+     * @codeCoverageIgnore
      */
     public function __unset($name)
     {
@@ -210,6 +222,8 @@ class Connection
      * @param string $name The database name
      *
      * @return bool
+     *
+     * @codeCoverageIgnore
      */
     public function __isset($name)
     {

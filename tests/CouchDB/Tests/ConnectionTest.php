@@ -72,6 +72,16 @@ JSON
     }
 
     /**
+     * @expectedException CouchDB\Exception\Exception
+     */
+    public function testFailingCreateDatabase()
+    {
+        $this->mock->append(new Response(200, [], '{"error":"conflict","reason":"Document update conflict."}'));
+
+        $this->connection->createDatabase('test');
+    }
+
+    /**
      * @expectedException CouchDB\Exception\InvalidDatabasenameException
      */
     public function testCreateDatabaseWithInvalidName()

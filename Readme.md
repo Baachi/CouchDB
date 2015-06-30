@@ -1,5 +1,5 @@
 # CouchDB #
-A CouchDB Client for >=PHP 5.3 with event system.
+A CouchDB Client for >=PHP 5.5 with event system.
 
 > __Please Note__
 > This is library is currently in development! Do not use it in __production__.
@@ -17,10 +17,8 @@ __Composer (recommend)__
 
 You can install CouchDB Client over composer. Add the following line into your ```composer.json``` file.
 
-```json
-"require": {
-    "bachi/couchdb": "dev-master"
-}
+```
+$ composer require baachi/couchdb
 ```
 
 __Git__
@@ -43,7 +41,7 @@ git submodule add https://github.com/Baachi/CouchDB.git
 ### Initialize ###
 
 ```php
-$client = new \CouchDB\Http\StreamClient('localhost', 5984);
+$client = new \GuzzleHttp\Client(['base_uri' => 'http://localhost:5984', 'http_errors' => false]);
 $connection = new \CouchDB\Connection($client);
 ```
 
@@ -88,7 +86,7 @@ It is green?
 ## Credits ##
 
  * Markus Bachmann <markus.bachmann@bachi.biz>
- * [All contributors] (https://github.com/Baachi/Alien/contributors)
+ * [All contributors] (https://github.com/Baachi/CouchDB/contributors)
 
 ## License ##
 CouchDB Client is released under the MIT License. See the bundled LICENSE file for details.

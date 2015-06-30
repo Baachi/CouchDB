@@ -88,6 +88,17 @@ class DatabaseTest extends TestCase
         $this->assertEquals('946B7D1C', $doc['_rev']);
     }
 
+    /**
+     * @expectedException CouchDB\Exception\Exception
+     */
+    public function testFailedInsert()
+    {
+        $this->mock->append(new Response(500, [], '{}'));
+
+        $doc = array('author' => 'JohnDoe', '_id' => 'john-doe');
+        $this->db->insert($doc);
+    }
+
     public function testFind()
     {
         $this->mock->append(new Response(200, [],
@@ -149,6 +160,23 @@ class DatabaseTest extends TestCase
         );
     }
 
+    /**
+     * @expectedException CouchDB\Exception\Exception
+     */
+    public function testFailUpdate()
+    {
+        $this->mock->append(new Response(500, [], '{}'));
+
+        $doc = [
+            '_id'    => 'john-doe',
+            '_rev'   =>  '946B7D1C',
+            'author' => 'johnDoe',
+            'title'  => 'CouchDB',
+        ];
+
+        $this->db->update('john-doe', $doc);
+    }
+
     public function testDelete()
     {
         $this->mock->append(new Response(200, [], '{"ok":true,"rev":"946B7D1C"}'));
@@ -162,6 +190,16 @@ class DatabaseTest extends TestCase
         $this->assertEquals('rev=946B7D1C', $request->getUri()->getQuery());
     }
 
+    /**
+     * @expectedException CouchDB\Exception\Exception
+     */
+    public function testFailingDelete()
+    {
+        $this->mock->append(new Response(500, [], '{}'));
+
+        $this->assertTrue($this->db->delete('some-doc', '946B7D1C'));
+    }
+
     public function testFindAll()
     {
         $this->mock->append(new Response(200, [], '{
@@ -172,7 +210,7 @@ class DatabaseTest extends TestCase
   ]
 }'));
 
-        $result = $this->db->findAll();
+        $result = $this->db->findAll(0, 'doc1');
 
         $this->assertEquals(3, $result['total_rows']);
         $this->assertEquals(0, $result['offset']);
@@ -182,7 +220,7 @@ class DatabaseTest extends TestCase
 
         $this->assertEquals('GET', $request->getMethod());
         $this->assertEquals('/test/_all_docs', $request->getUri()->getPath());
-        $this->assertEquals('include_docs=true', $request->getUri()->getQuery());
+        $this->assertEquals('include_docs=true&limit=0&startkey=doc1', $request->getUri()->getQuery());
     }
 
     public function testFindDocuments()
@@ -194,7 +232,7 @@ class DatabaseTest extends TestCase
   ]
 }'));
 
-        $docs = $this->db->findDocuments(array('1', '2'));
+        $docs = $this->db->findDocuments(array('1', '2'), 0, 100);
         $this->assertEquals(100, $docs['total_rows']);
         $this->assertCount(2, $docs['rows']);
 
@@ -202,7 +240,7 @@ class DatabaseTest extends TestCase
 
         $this->assertEquals('POST', $request->getMethod());
         $this->assertEquals('/test/_all_docs', $request->getUri()->getPath());
-        $this->assertEquals('include_docs=true', $request->getUri()->getQuery());
+        $this->assertEquals('include_docs=true&limit=0&skip=100', $request->getUri()->getQuery());
         $this->assertEquals('{"keys":["1","2"]}', (string) $request->getBody());
     }
 
@@ -230,5 +268,14 @@ class DatabaseTest extends TestCase
 
         $this->assertEquals('GET', $request->getMethod());
         $this->assertEquals('/test/_changes', $request->getUri()->getPath());
+    }
+
+    /**
+     * @expectedException CouchDB\Exception\Exception
+     */
+    public function testFailChanges()
+    {
+        $this->mock->append(new Response(500, [], '{}'));
+        $changes = $this->db->getChanges();
     }
 }
