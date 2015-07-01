@@ -282,6 +282,6 @@ class DatabaseTest extends TestCase
     public function testFailChanges()
     {
         $this->mock->append(new Response(500, [], '{}'));
-        $changes = $this->db->getChanges();
+        $this->db->getChanges();
     }
 }
