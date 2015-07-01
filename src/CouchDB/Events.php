@@ -5,9 +5,9 @@ namespace CouchDB;
  */
 final class Events
 {
-    const preDropDatabase = 'preDropDatabase';
-    const postDropDatabase = 'postDropDatabase';
+    const PRE_DROP_DATABASE = 'preDropDatabase';
+    const POST_DROP_DATABASE = 'postDropDatabase';
 
-    const preCreateDatabase = 'preCreateDatabase';
-    const postCreateDatabase = 'postCreateDatabase';
+    const PRE_CREATE_DATABASE = 'preCreateDatabase';
+    const POST_CREATE_DATABASE = 'postCreateDatabase';
 }

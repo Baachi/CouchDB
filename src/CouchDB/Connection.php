@@ -79,9 +79,9 @@ class Connection
      */
     public function dropDatabase($name)
     {
-        if ($this->eventManager->hasListeners(Events::preDropDatabase)) {
+        if ($this->eventManager->hasListeners(Events::PRE_DROP_DATABASE)) {
             // @codeCoverageIgnoreStart
-            $this->eventManager->dispatchEvent(Events::preDropDatabase, new EventArgs($this, $name));
+            $this->eventManager->dispatchEvent(Events::PRE_DROP_DATABASE, new EventArgs($this, $name));
             // @codeCoverageIgnoreEnd
         }
 
@@ -94,9 +94,9 @@ class Connection
         $json = (string) $response->getBody();
         $status = JSONEncoder::decode($json);
 
-        if ($this->eventManager->hasListeners(Events::postDropDatabase)) {
+        if ($this->eventManager->hasListeners(Events::POST_DROP_DATABASE)) {
             // @codeCoverageIgnoreStart
-            $this->eventManager->dispatchEvent(Events::postDropDatabase, new EventArgs($this, $name));
+            $this->eventManager->dispatchEvent(Events::POST_DROP_DATABASE, new EventArgs($this, $name));
             // @codeCoverageIgnoreEnd
         }
 
@@ -158,9 +158,9 @@ class Connection
             ));
         }
 
-        if ($this->eventManager->hasListeners(Events::preCreateDatabase)) {
+        if ($this->eventManager->hasListeners(Events::PRE_CREATE_DATABASE)) {
             // @codeCoverageIgnoreStart
-            $this->eventManager->dispatchEvent(Events::preCreateDatabase, new EventArgs($this, $name));
+            $this->eventManager->dispatchEvent(Events::PRE_CREATE_DATABASE, new EventArgs($this, $name));
             // @codeCoverageIgnoreEnd
         }
 
@@ -179,9 +179,9 @@ class Connection
 
         $database = $this->wrapDatabase($name);
 
-        if ($this->eventManager->hasListeners(Events::postCreateDatabase)) {
+        if ($this->eventManager->hasListeners(Events::POST_CREATE_DATABASE)) {
             // @codeCoverageIgnoreStart
-            $this->eventManager->dispatchEvent(Events::postCreateDatabase, new EventArgs($database));
+            $this->eventManager->dispatchEvent(Events::POST_CREATE_DATABASE, new EventArgs($database));
             // @codeCoverageIgnoreEnd
         }
 
