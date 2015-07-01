@@ -25,6 +25,11 @@ class Database
      */
     private $client;
 
+    /**
+     * @param string          $name The database name.
+     * @param Connection      $conn The current connection.
+     * @param ClientInterface $client The client
+     */
     public function __construct($name, Connection $conn, ClientInterface $client)
     {
         $this->conn = $conn;
