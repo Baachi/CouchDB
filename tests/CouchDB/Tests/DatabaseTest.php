@@ -16,6 +16,12 @@ class DatabaseTest extends TestCase
 
         $this->db = new Database('test', $this->connection, $this->client);
     }
+
+    public function testGetConnection()
+    {
+        $this->assertEquals($this->connection, $this->db->getConnection());
+    }
+
     public function testGetName()
     {
         $this->assertEquals('test', $this->db->getName());

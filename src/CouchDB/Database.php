@@ -39,7 +39,7 @@ class Database
      */
     public function getConnection()
     {
-        return $this->connection;
+        return $this->conn;
     }
 
     /**
