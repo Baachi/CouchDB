@@ -17,7 +17,6 @@ final class JSONEncoder
         if ("null" === $json && $value !== null) {
             throw new JsonEncodeException($value);
         }
-        var_dump($json);
         if (false === $json) {
             throw new JsonEncodeException($value);
         }
