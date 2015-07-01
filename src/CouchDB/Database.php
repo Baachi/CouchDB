@@ -33,6 +33,16 @@ class Database
     }
 
     /**
+     * Gets the current connection
+     *
+     * @return Connection
+     */
+    public function getConnection()
+    {
+        return $this->connection;
+    }
+
+    /**
      * Find a document by a id.
      *
      * @param string $id
