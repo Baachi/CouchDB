@@ -9,6 +9,8 @@ Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrin
 
 [![Code Coverage](https://scrutinizer-ci.com/g/Baachi/CouchDB/badges/coverage.png?s=61e18d0b5850e702442bef89fe66aee830a4ecd4)](https://scrutinizer-ci.com/g/Baachi/CouchDB/)
 
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/9a96763c-c938-48a6-a9fa-ac77efb7197d/mini.png)](https://insight.sensiolabs.com/projects/9a96763c-c938-48a6-a9fa-ac77efb7197d)
+
 ## Installation ##
 __Composer (recommend)__
 
