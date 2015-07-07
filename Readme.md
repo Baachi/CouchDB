@@ -17,7 +17,7 @@ __Composer (recommend)__
 You can install CouchDB Client over composer. Add the following line into your ```composer.json``` file.
 
 ```
-$ composer require baachi/couchdb
+$ composer require bachi/couchdb
 ```
 
 __Git__
