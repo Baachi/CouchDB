@@ -12,7 +12,7 @@ Inspired by [Doctrine/MongoDB](https://github.com/Doctrine/mongodb) and [Doctrin
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/9a96763c-c938-48a6-a9fa-ac77efb7197d/mini.png)](https://insight.sensiolabs.com/projects/9a96763c-c938-48a6-a9fa-ac77efb7197d)
 
 ## Installation ##
-__Composer (recommend)__
+__Composer__
 
 You can install CouchDB Client over composer. Add the following line into your ```composer.json``` file.
 
@@ -20,20 +20,9 @@ You can install CouchDB Client over composer. Add the following line into your `
 $ composer require bachi/couchdb
 ```
 
-__Git__
+__Don't use composer?__
 
-You can clone the repository:
-
-```
-git clone https://github.com/Baachi/CouchDB.git
-```
-
-or if you already use git in your project
-
-```
-git submodule add https://github.com/Baachi/CouchDB.git
-```
-
+Start to disover composer now! https://getcomposer.org
 
 ## Usage ##
 
