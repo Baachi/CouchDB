@@ -52,7 +52,7 @@ class Database
      * Find a document by a id.
      *
      * @param string $id
-     
+     *
      * @throws Exception If the document doesn't exists.
      *
      * @return mixed
