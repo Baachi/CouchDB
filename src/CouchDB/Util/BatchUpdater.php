@@ -1,8 +1,9 @@
 <?php
+
 namespace CouchDB\Util;
 
-use CouchDB\Encoder\JSONEncoder;
 use CouchDB\Database;
+use CouchDB\Encoder\JSONEncoder;
 use GuzzleHttp\ClientInterface;
 
 /**
@@ -26,21 +27,21 @@ class BatchUpdater
     private $data;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \CouchDB\Http\ClientInterface $client
-     * @param \CouchDB\Database $db
+     * @param \CouchDB\Database             $db
      */
     public function __construct(ClientInterface $client, Database $db)
     {
         $this->client = $client;
         $this->database = $db;
 
-        $this->data = ['docs' => array()];
+        $this->data = ['docs' => []];
     }
 
     /**
-     * Enqueue the document for a update
+     * Enqueue the document for a update.
      *
      * @param array $doc
      *
@@ -54,7 +55,7 @@ class BatchUpdater
     }
 
     /**
-     * Enqueue a document for deletion
+     * Enqueue a document for deletion.
      *
      * @param string $id
      * @param string $rev
@@ -69,15 +70,15 @@ class BatchUpdater
     }
 
     /**
-     * Execute the queue
+     * Execute the queue.
      *
      * @return mixed
      */
     public function execute()
     {
         $response = $this->client->request('POST', "/{$this->database->getName()}/_bulk_docs", [
-            'body' => JSONEncoder::encode($this->data),
-            'headers' => ['Content-Type' => 'application/json']
+            'body'    => JSONEncoder::encode($this->data),
+            'headers' => ['Content-Type' => 'application/json'],
         ]);
 
         return JSONEncoder::decode((string) $response->getBody());

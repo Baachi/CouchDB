@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\DesignDocument;
 
 /**
@@ -7,42 +8,42 @@ namespace CouchDB\DesignDocument;
 interface ResultInterface extends \IteratorAggregate, \Countable
 {
     /**
-     * Return all rows
+     * Return all rows.
      *
      * @return array
      */
     public function getRows();
 
     /**
-     * Return the first row
+     * Return the first row.
      *
      * @return bool|array
      */
     public function getFirstRow();
 
     /**
-     * Return the last row
+     * Return the last row.
      *
      * @return bool|array
      */
     public function getLastRow();
 
     /**
-     * Return the total amount of rows
+     * Return the total amount of rows.
      *
-     * @return integer
+     * @return int
      */
     public function getTotalRows();
 
     /**
-     * Gets the offset
+     * Gets the offset.
      *
-     * @return integer
+     * @return int
      */
     public function getOffset();
 
     /**
-     * Return the array
+     * Return the array.
      *
      * @return array
      */

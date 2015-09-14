@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Tests;
 
 use CouchDB\Connection;
@@ -147,7 +148,6 @@ JSON
         $request = $this->mock->getLastRequest();
 
         $this->assertEquals('0.11.0', $version);
-
 
         $this->assertEquals('GET', $request->getMethod());
         $this->assertEquals('/', $request->getUri()->getPath());

@@ -1,8 +1,9 @@
 <?php
+
 namespace CouchDB\Tests\Events;
 
-use CouchDB\Tests\TestCase;
 use CouchDB\Events\EventArgs;
+use CouchDB\Tests\TestCase;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

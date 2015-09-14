@@ -1,11 +1,11 @@
 <?php
+
 namespace CouchDB;
 
-use CouchDB\Events\EventArgs;
 use CouchDB\Encoder\JSONEncoder;
-use CouchDB\Exception\InvalidDatabasenameException;
+use CouchDB\Events\EventArgs;
 use CouchDB\Exception\Exception;
-
+use CouchDB\Exception\InvalidDatabasenameException;
 use Doctrine\Common\EventManager;
 use GuzzleHttp\ClientInterface;
 
@@ -35,7 +35,7 @@ class Connection
     }
 
     /**
-     * Return the event dispatcher
+     * Return the event dispatcher.
      *
      * @return EventManager
      */
@@ -45,35 +45,35 @@ class Connection
     }
 
     /**
-     * Get the couchdb version
+     * Get the couchdb version.
      *
      * @return string
      */
     public function version()
     {
-        $json  = (string) $this->client->request('GET', '/')->getBody();
+        $json = (string) $this->client->request('GET', '/')->getBody();
         $value = JSONEncoder::decode($json);
 
         return $value['version'];
     }
 
     /**
-     * Show all databases
+     * Show all databases.
      *
      * @return array
      */
     public function listDatabases()
     {
-        $json      = (string) $this->client->request('GET', '/_all_dbs')->getBody();
+        $json = (string) $this->client->request('GET', '/_all_dbs')->getBody();
         $databases = JSONEncoder::decode($json);
 
         return $databases;
     }
 
     /**
-     * Drop a database
+     * Drop a database.
      *
-     * @param  string $name
+     * @param string $name
      *
      * @return bool
      */
@@ -108,13 +108,13 @@ class Connection
      *
      * @param string $name
      *
-     * @return Database
-     *
      * @throws Exception If the database doesn't exists.
+     *
+     * @return Database
      */
     public function selectDatabase($name)
     {
-        $response = $this->client->request('GET', sprintf("/%s/", $name));
+        $response = $this->client->request('GET', sprintf('/%s/', $name));
 
         if (404 === $response->getStatusCode()) {
             throw new Exception(sprintf('The database "%s" does not exist', $name));
@@ -134,7 +134,7 @@ class Connection
     {
         $response = $this->client->request(
             'GET',
-            sprintf("/%s/", urlencode($name))
+            sprintf('/%s/', urlencode($name))
         );
 
         return 404 !== $response->getStatusCode();
@@ -145,9 +145,9 @@ class Connection
      *
      * @param string $name The database name
      *
-     * @return Database
-     *
      * @throws Exception If the database could not be created.
+     *
+     * @return Database
      */
     public function createDatabase($name)
     {
@@ -164,7 +164,7 @@ class Connection
             // @codeCoverageIgnoreEnd
         }
 
-        $response  = $this->client->request('PUT', sprintf('/%s', $name));
+        $response = $this->client->request('PUT', sprintf('/%s', $name));
 
         if (412 === $response->getStatusCode()) {
             throw new Exception(sprintf('The database "%s" already exist', $name));
@@ -189,7 +189,7 @@ class Connection
     }
 
     /**
-     * Gets the database
+     * Gets the database.
      *
      * @param string $name The database name
      *
@@ -217,7 +217,7 @@ class Connection
     }
 
     /**
-     * Check if the database exist
+     * Check if the database exist.
      *
      * @param string $name The database name
      *
@@ -231,7 +231,7 @@ class Connection
     }
 
     /**
-     * Wraps the database to a object
+     * Wraps the database to a object.
      *
      * @param string $name The database name
      *

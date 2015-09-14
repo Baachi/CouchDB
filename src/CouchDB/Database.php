@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB;
 
 use CouchDB\Encoder\JSONEncoder;
@@ -26,8 +27,8 @@ class Database
     private $client;
 
     /**
-     * @param string          $name The database name.
-     * @param Connection      $conn The current connection.
+     * @param string          $name   The database name.
+     * @param Connection      $conn   The current connection.
      * @param ClientInterface $client The client
      */
     public function __construct($name, Connection $conn, ClientInterface $client)
@@ -38,7 +39,7 @@ class Database
     }
 
     /**
-     * Gets the current connection
+     * Gets the current connection.
      *
      * @return Connection
      */
@@ -51,15 +52,15 @@ class Database
      * Find a document by a id.
      *
      * @param string $id
-
-     * @return mixed
-
+     
      * @throws Exception If the document doesn't exists.
+     *
+     * @return mixed
      */
     public function find($id)
     {
         $response = $this->client->request('GET', sprintf('/%s/%s', $this->name, $id));
-        $json     = (string) $response->getBody();
+        $json = (string) $response->getBody();
 
         if (404 === $response->getStatusCode()) {
             throw new Exception('Document does not exist');
@@ -71,7 +72,7 @@ class Database
     /**
      * Find all documents from the database.
      *
-     * @param integer|null $limit
+     * @param int|null    $limit
      * @param string|null $startKey
      *
      * @return mixed
@@ -81,10 +82,10 @@ class Database
         $path = "/{$this->name}/_all_docs?include_docs=true";
 
         if (null !== $limit) {
-            $path .= '&limit=' . (integer) $limit;
+            $path .= '&limit='.(integer) $limit;
         }
         if (null !== $startKey) {
-            $path .= '&startkey=' . (string) $startKey;
+            $path .= '&startkey='.(string) $startKey;
         }
 
         $json = (string) $this->client->request('GET', $path)->getBody();
@@ -94,11 +95,11 @@ class Database
     }
 
     /**
-     * Find a documents by a id
+     * Find a documents by a id.
      *
-     * @param array        $ids
-     * @param null|integer $limit
-     * @param null|integer $offset
+     * @param array    $ids
+     * @param null|int $limit
+     * @param null|int $offset
      *
      * @return array|null
      */
@@ -107,15 +108,15 @@ class Database
         $path = "/{$this->name}/_all_docs?include_docs=true";
 
         if (null !== $limit) {
-            $path .= '&limit=' . (integer) $limit;
+            $path .= '&limit='.(integer) $limit;
         }
         if (null !== $offset) {
-            $path .= '&skip=' . (integer) $offset;
+            $path .= '&skip='.(integer) $offset;
         }
 
         $response = $this->client->request('POST', $path, [
-            'body' => JSONEncoder::encode(['keys' => $ids]),
-            'headers' => ['Content-Type' => 'application/json']
+            'body'    => JSONEncoder::encode(['keys' => $ids]),
+            'headers' => ['Content-Type'             => 'application/json'],
         ]);
 
         return JSONEncoder::decode((string) $response->getBody());
@@ -135,13 +136,13 @@ class Database
             unset($clone['_id']);
 
             $response = $this->client->request('PUT', "/{$this->name}/{$doc['_id']}", [
-                'body' => JSONEncoder::encode($clone),
-                'headers' => ['Content-Type' => 'application/json']
+                'body'    => JSONEncoder::encode($clone),
+                'headers' => ['Content-Type' => 'application/json'],
             ]);
         } else {
             $response = $this->client->request('POST', "/{$this->name}/", [
-                'body' => JSONEncoder::encode($doc),
-                'headers' => ['Content-Type' => 'application/json']
+                'body'    => JSONEncoder::encode($doc),
+                'headers' => ['Content-Type' => 'application/json'],
             ]);
         }
 
@@ -156,10 +157,10 @@ class Database
     }
 
     /**
-     * Updates a document
+     * Updates a document.
      *
-     * @param  string            $id  The id from the document
-     * @param  array             $doc A reference from the document
+     * @param string $id  The id from the document
+     * @param array  $doc A reference from the document
      *
      * @throws Exception
      */
@@ -168,8 +169,8 @@ class Database
         $json = JSONEncoder::encode($doc);
 
         $response = $this->client->request('PUT', "/{$this->name}/{$id}", [
-            'body' => $json,
-            'headers' => ['Content-Type' => 'application/json']
+            'body'    => $json,
+            'headers' => ['Content-Type' => 'application/json'],
         ]);
 
         if (201 !== $response->getStatusCode()) {
@@ -183,13 +184,14 @@ class Database
     }
 
     /**
-     * Deletes a document
+     * Deletes a document.
      *
      * @param string $id
      * @param string $rev
      *
-     * @return bool
      * @throws \RuntimeException
+     *
+     * @return bool
      */
     public function delete($id, $rev)
     {
@@ -203,7 +205,7 @@ class Database
     }
 
     /**
-     * Creates a batch updater
+     * Creates a batch updater.
      *
      * @return Util\BatchUpdater
      */
@@ -213,7 +215,7 @@ class Database
     }
 
     /**
-     * Return the database informations
+     * Return the database informations.
      *
      * @return array
      */
@@ -225,11 +227,11 @@ class Database
     }
 
     /**
-     * Return informations about the last changes from the database
-     *
-     * @return array
+     * Return informations about the last changes from the database.
      *
      * @throws \RuntimeException If the request was not successfull
+     *
+     * @return array
      */
     public function getChanges()
     {
@@ -243,7 +245,7 @@ class Database
     }
 
     /**
-     * Return the database name
+     * Return the database name.
      *
      * @return string
      */

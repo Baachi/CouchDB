@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Tests;
 
 use CouchDB\Connection;
@@ -21,7 +22,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         $this->mock = new MockHandler();
         $this->client = new Client([
-            'handler' => HandlerStack::create($this->mock),
+            'handler'     => HandlerStack::create($this->mock),
             'http_errors' => false,
         ]);
         $this->connection = new Connection($this->client);

@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Events;
 
 use Doctrine\Common\EventArgs as BaseEventArgs;
@@ -21,7 +22,7 @@ class EventArgs extends BaseEventArgs
     public function __construct($invoker, &$data = null)
     {
         $this->invoker = $invoker;
-        $this->data    = $data;
+        $this->data = $data;
     }
 
     public function getData()

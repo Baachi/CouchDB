@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\DesignDocument;
 
 /**
@@ -12,7 +13,7 @@ class Result implements ResultInterface
     protected $data;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $data
      */
@@ -22,9 +23,9 @@ class Result implements ResultInterface
     }
 
     /**
-     * Return the total amount of rows
+     * Return the total amount of rows.
      *
-     * @return integer
+     * @return int
      */
     public function getTotalRows()
     {
@@ -32,9 +33,9 @@ class Result implements ResultInterface
     }
 
     /**
-     * Gets the offset
+     * Gets the offset.
      *
-     * @return integer
+     * @return int
      */
     public function getOffset()
     {
@@ -42,7 +43,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * Return all rows
+     * Return all rows.
      *
      * @return array
      */
@@ -52,7 +53,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * Return the first row
+     * Return the first row.
      *
      * @return bool|array
      */
@@ -69,7 +70,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * Return the last row
+     * Return the last row.
      *
      * @return bool|array
      */
@@ -86,7 +87,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * Return the array
+     * Return the array.
      *
      * @return array
      */
@@ -96,7 +97,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getIterator()
     {
@@ -104,7 +105,7 @@ class Result implements ResultInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function count()
     {
