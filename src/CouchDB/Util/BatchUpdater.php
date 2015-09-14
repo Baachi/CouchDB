@@ -29,8 +29,8 @@ class BatchUpdater
     /**
      * Constructor.
      *
-     * @param \CouchDB\Http\ClientInterface $client
-     * @param \CouchDB\Database             $db
+     * @param ClientInterface $client
+     * @param Database        $db
      */
     public function __construct(ClientInterface $client, Database $db)
     {
@@ -72,7 +72,7 @@ class BatchUpdater
     /**
      * Execute the queue.
      *
-     * @return mixed
+     * @return array
      */
     public function execute()
     {
