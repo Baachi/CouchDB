@@ -5,7 +5,7 @@ namespace CouchDB\Exception;
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class JsonEncodeException extends JsonException
+class JsonException extends \Exception
 {
     public function __construct($data, $code = 0, $previous = null)
     {
