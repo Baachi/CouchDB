@@ -127,6 +127,8 @@ class Database
      *
      * @param array $doc
      *
+     * @deprecated To update a document use Database::update, it will be removed in version 2
+     *
      * @throws Exception
      */
     public function insert(array &$doc)

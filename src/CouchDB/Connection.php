@@ -195,6 +195,8 @@ class Connection
      *
      * @return Database
      *
+     * @deprecated This method will be removed in version 2.     
+     *
      * @codeCoverageIgnore
      */
     public function __get($name)
@@ -209,6 +211,8 @@ class Connection
      *
      * @return bool
      *
+     * @deprecated This method will be removed in version 2.
+     *
      * @codeCoverageIgnore
      */
     public function __unset($name)
@@ -222,6 +226,8 @@ class Connection
      * @param string $name The database name
      *
      * @return bool
+     *
+     * @deprecated This method will be removed in version 2.
      *
      * @codeCoverageIgnore
      */
