@@ -1,8 +1,9 @@
 <?php
+
 namespace CouchDB\Tests;
 
-use CouchDB\Database;
 use CouchDB\Connection;
+use CouchDB\Database;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -56,7 +57,7 @@ class DatabaseTest extends TestCase
         $this->assertEquals(12377, $info['disk_size']);
         $this->assertEquals(1, $info['doc_count']);
         $this->assertEquals(1, $info['doc_del_count']);
-        $this->assertEquals("1267612389906234", $info['instance_start_time']);
+        $this->assertEquals('1267612389906234', $info['instance_start_time']);
         $this->assertEquals(0, $info['purge_seq']);
         $this->assertEquals(4, $info['update_seq']);
     }
@@ -64,7 +65,7 @@ class DatabaseTest extends TestCase
     public function testInsertWithOutId()
     {
         $this->mock->append(new Response(201, [], '{"ok":true, "id":"123BAC", "rev":"946B7D1C"}'));
-        $doc = array('author' => 'JohnDoe');
+        $doc = ['author' => 'JohnDoe'];
 
         $this->db->insert($doc);
         $request = $this->mock->getLastRequest();
@@ -81,7 +82,7 @@ class DatabaseTest extends TestCase
     {
         $this->mock->append(new Response(201, [], '{"ok":true, "id":"john-doe", "rev":"946B7D1C"}'));
 
-        $doc = array('author' => 'JohnDoe', '_id' => 'john-doe');
+        $doc = ['author' => 'JohnDoe', '_id' => 'john-doe'];
         $this->db->insert($doc);
 
         $request = $this->mock->getLastRequest();
@@ -101,7 +102,7 @@ class DatabaseTest extends TestCase
     {
         $this->mock->append(new Response(500, [], '{}'));
 
-        $doc = array('author' => 'JohnDoe', '_id' => 'john-doe');
+        $doc = ['author' => 'JohnDoe', '_id' => 'john-doe'];
         $this->db->insert($doc);
     }
 
@@ -144,7 +145,7 @@ class DatabaseTest extends TestCase
 
         $doc = [
             '_id'    => 'john-doe',
-            '_rev'   =>  '946B7D1C',
+            '_rev'   => '946B7D1C',
             'author' => 'johnDoe',
             'title'  => 'CouchDB',
         ];
@@ -175,7 +176,7 @@ class DatabaseTest extends TestCase
 
         $doc = [
             '_id'    => 'john-doe',
-            '_rev'   =>  '946B7D1C',
+            '_rev'   => '946B7D1C',
             'author' => 'johnDoe',
             'title'  => 'CouchDB',
         ];
@@ -238,7 +239,7 @@ class DatabaseTest extends TestCase
   ]
 }'));
 
-        $docs = $this->db->findDocuments(array('1', '2'), 0, 100);
+        $docs = $this->db->findDocuments(['1', '2'], 0, 100);
         $this->assertEquals(100, $docs['total_rows']);
         $this->assertCount(2, $docs['rows']);
 

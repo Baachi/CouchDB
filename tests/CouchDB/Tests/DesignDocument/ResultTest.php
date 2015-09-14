@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Tests\DesignDocument;
 
 use CouchDB\DesignDocument\Result;
@@ -10,33 +11,33 @@ class ResultTest extends \PHPUnit_Framework_TestCase
 {
     protected function setup()
     {
-        $this->resultData = array(
+        $this->resultData = [
             'total_rows' => 51,
             'offset'     => 0,
-            'rows'       => array(
-                array(
+            'rows'       => [
+                [
                     'id'     => '64ACF01B05F53ACFEC48C062A5D01D89',
                     'key'    => null,
-                    'value' => array(
+                    'value'  => [
                         'foo' => 'bar',
-                    ),
-                ),
-                array(
-                    'id' => '5D01D8964ACF01B05F53ACFEC48C062A',
-                    'key' => null,
-                    'value' => array(
+                    ],
+                ],
+                [
+                    'id'    => '5D01D8964ACF01B05F53ACFEC48C062A',
+                    'key'   => null,
+                    'value' => [
                         'foo' => 'bar',
-                    ),
-                ),
-                array(
-                    'id' => 'EC48C062A5D01D8964ACF01B05F53ACF',
-                    'key' => null,
-                    'value' => array(
+                    ],
+                ],
+                [
+                    'id'    => 'EC48C062A5D01D8964ACF01B05F53ACF',
+                    'key'   => null,
+                    'value' => [
                         'foo' => 'bar',
-                    ),
-                )
-            ),
-        );
+                    ],
+                ],
+            ],
+        ];
 
         $this->result = new Result($this->resultData);
     }

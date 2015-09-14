@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Encoder;
 
 use CouchDB\Exception\JsonDecodeException;
@@ -9,17 +10,19 @@ use CouchDB\Exception\JsonEncodeException;
  */
 final class JSONEncoder
 {
-    private function __construct() {}
+    private function __construct()
+    {
+    }
 
     public static function encode($value)
     {
-        set_error_handler(function() use ($value) {
+        set_error_handler(function () use ($value) {
             throw new JsonEncodeException($value);
         });
 
         $json = json_encode($value);
 
-        if ("null" === $json && $value !== null) {
+        if ('null' === $json && $value !== null) {
             throw new JsonEncodeException($value);
         }
 
@@ -30,7 +33,7 @@ final class JSONEncoder
 
     public static function decode($json)
     {
-        set_error_handler(function() use ($json) {
+        set_error_handler(function () use ($json) {
             throw new JsonDecodeException($json);
         });
 
@@ -44,5 +47,4 @@ final class JSONEncoder
 
         return $value;
     }
-
 }

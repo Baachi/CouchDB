@@ -1,4 +1,5 @@
 <?php
+
 namespace CouchDB\Exception;
 
 /**
@@ -6,14 +7,14 @@ namespace CouchDB\Exception;
  */
 class JsonDecodeException extends \Exception
 {
-    private static $errors = array(
+    private static $errors = [
         JSON_ERROR_NONE           => 'unknown error',
         JSON_ERROR_DEPTH          => 'The maximum stack depth has been exceeded',
         JSON_ERROR_SYNTAX         => 'Syntax error',
         JSON_ERROR_CTRL_CHAR      => 'Control character error',
         JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON',
-        JSON_ERROR_UTF8           => 'Malformed UTF-8 characters'
-    );
+        JSON_ERROR_UTF8           => 'Malformed UTF-8 characters',
+    ];
 
     public function __construct($json, $code = 0, $previous = null)
     {
@@ -21,5 +22,4 @@ class JsonDecodeException extends \Exception
 
         parent::__construct($message, $code, $previous);
     }
-
 }
