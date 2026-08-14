@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB\Util;
+namespace Bachi\CouchDB\Util;
 
-use CouchDB\Database;
-use CouchDB\Encoder\JSONEncoder;
+use Bachi\CouchDB\Database;
+use Bachi\CouchDB\Encoder\JSONEncoder;
 use GuzzleHttp\ClientInterface;
 
 /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace CouchDB\Tests\DesignDocument;
+namespace Bachi\CouchDB\Tests\DesignDocument;
 
-use CouchDB\DesignDocument\Result;
+use Bachi\CouchDB\DesignDocument\Result;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

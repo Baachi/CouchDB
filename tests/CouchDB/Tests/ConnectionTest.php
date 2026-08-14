@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB\Tests;
+namespace Bachi\CouchDB\Tests;
 
-use CouchDB\Connection;
-use CouchDB\Exception\Exception;
+use Bachi\CouchDB\Connection;
+use Bachi\CouchDB\Exception\Exception;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -51,7 +51,7 @@ JSON
         ));
 
         $database = $this->connection->selectDatabase('test');
-        $this->assertInstanceOf('CouchDB\\Database', $database);
+        $this->assertInstanceOf('Bachi\\CouchDB\\Database', $database);
         $this->assertEquals('test', $database->getName());
 
         $request = $this->mock->getLastRequest();

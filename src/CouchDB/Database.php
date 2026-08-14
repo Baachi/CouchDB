@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB;
+namespace Bachi\CouchDB;
 
-use CouchDB\Encoder\JSONEncoder;
-use CouchDB\Exception\Exception;
+use Bachi\CouchDB\Encoder\JSONEncoder;
+use Bachi\CouchDB\Exception\Exception;
 use GuzzleHttp\ClientInterface;
 
 /**

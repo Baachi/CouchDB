@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB\Tests\Util;
+namespace Bachi\CouchDB\Tests\Util;
 
-use CouchDB\Tests\TestCase;
-use CouchDB\Util\BatchUpdater;
+use Bachi\CouchDB\Tests\TestCase;
+use Bachi\CouchDB\Util\BatchUpdater;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -15,7 +15,7 @@ class BatchUpdaterTest extends TestCase
     {
         parent::setUp();
 
-        $this->database = $this->getMockBuilder('CouchDB\Database')
+        $this->database = $this->getMockBuilder('Bachi\CouchDB\Database')
             ->disableOriginalConstructor()
             ->getMock();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace CouchDB\Events;
+namespace Bachi\CouchDB\Events;
 
 use Doctrine\Common\EventArgs as BaseEventArgs;
 
