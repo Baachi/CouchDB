@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB\Encoder;
+namespace Bachi\CouchDB\Encoder;
 
-use CouchDB\Exception\JsonDecodeException;
-use CouchDB\Exception\JsonEncodeException;
+use Bachi\CouchDB\Exception\JsonDecodeException;
+use Bachi\CouchDB\Exception\JsonEncodeException;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

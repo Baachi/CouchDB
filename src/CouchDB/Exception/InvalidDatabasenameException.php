@@ -1,6 +1,6 @@
 <?php
 
-namespace CouchDB\Exception;
+namespace Bachi\CouchDB\Exception;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

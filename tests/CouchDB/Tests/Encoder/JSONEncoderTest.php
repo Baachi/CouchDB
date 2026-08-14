@@ -1,8 +1,8 @@
 <?php
 
-namespace CouchDB\Tests\Encoder;
+namespace Bachi\CouchDB\Tests\Encoder;
 
-use CouchDB\Encoder\JSONEncoder;
+use Bachi\CouchDB\Encoder\JSONEncoder;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

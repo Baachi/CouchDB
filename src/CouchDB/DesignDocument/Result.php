@@ -1,6 +1,6 @@
 <?php
 
-namespace CouchDB\DesignDocument;
+namespace Bachi\CouchDB\DesignDocument;
 
 /**
  * @author Markus Bachmann <markus.bachmann@bachi.biz>

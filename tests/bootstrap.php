@@ -5,4 +5,4 @@ if (!file_exists(__DIR__.'/../vendor/autoload.php')) {
     die();
 }
 $loader = require_once __DIR__.'/../vendor/autoload.php';
-$loader->add('CouchDB\\Tests', __DIR__);
+$loader->add('Bachi\\CouchDB\\Tests', __DIR__);

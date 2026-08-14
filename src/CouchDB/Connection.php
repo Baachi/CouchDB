@@ -1,11 +1,11 @@
 <?php
 
-namespace CouchDB;
+namespace Bachi\CouchDB;
 
-use CouchDB\Encoder\JSONEncoder;
-use CouchDB\Events\EventArgs;
-use CouchDB\Exception\Exception;
-use CouchDB\Exception\InvalidDatabasenameException;
+use Bachi\CouchDB\Encoder\JSONEncoder;
+use Bachi\CouchDB\Events\EventArgs;
+use Bachi\CouchDB\Exception\Exception;
+use Bachi\CouchDB\Exception\InvalidDatabasenameException;
 use Doctrine\Common\EventManager;
 use GuzzleHttp\ClientInterface;
 

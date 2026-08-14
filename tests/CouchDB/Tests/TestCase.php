@@ -1,8 +1,8 @@
 <?php
 
-namespace CouchDB\Tests;
+namespace Bachi\CouchDB\Tests;
 
-use CouchDB\Connection;
+use Bachi\CouchDB\Connection;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;

@@ -1,9 +1,9 @@
 <?php
 
-namespace CouchDB\Tests;
+namespace Bachi\CouchDB\Tests;
 
-use CouchDB\Connection;
-use CouchDB\Database;
+use Bachi\CouchDB\Connection;
+use Bachi\CouchDB\Database;
 use GuzzleHttp\Psr7\Response;
 
 /**
@@ -253,7 +253,7 @@ class DatabaseTest extends TestCase
 
     public function testCreateBatchUpdater()
     {
-        $this->assertInstanceOf('CouchDB\\Util\\BatchUpdater', $this->db->createBatchUpdater());
+        $this->assertInstanceOf('Bachi\\CouchDB\\Util\\BatchUpdater', $this->db->createBatchUpdater());
     }
 
     public function testGetChanges()
